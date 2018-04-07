@@ -10,6 +10,9 @@ import flask
 from flask import request
 from flask import url_for
 
+# User Authintication from flask dependancy.
+from werkzeug.security import generate_password_hash, check_password_hash
+
 import logging
 import sys
 import arrow
@@ -33,7 +36,6 @@ if CONFIG.DEBUG is True:
 app = flask.Flask(__name__)
 app.secret_key = CONFIG.SECRET_KEY
 
-
 ####
 # Database connection per server process
 ###
@@ -44,6 +46,79 @@ try:
 except:
     print("Failure opening database. Is Mongo running? Correct password?")
     sys.exit(1)
+
+
+###
+# User Functionality
+###
+
+class User:
+    def __init__(self, username, password, userType):
+        self.username = username
+        self.password = password
+        self.userType = userType
+    
+    def save_to_db(self):
+        if find_by_username(self.username):
+            print("User Already Exists")
+            return False
+        else:
+            print("Creating new user")
+            new = {
+                "Username" : self.username,
+                "password" : self.password,
+                "userType" : self.userType,
+                }
+            collection.insert(new)
+            return True
+    #end save_to_db
+    
+def find_by_username(uname):
+    for record in collection.find({ "username" : uname}):
+        return User(record['username'], record['password'], record['userType'])
+    return False
+#end find_by_username
+
+
+@app.route('/_register')
+def register_user():
+    app.logger.debug("Checking Registration")
+    username = request.args.get('username', type=str)
+    password = request.args.get('password', type=str)
+    userType = request.args.get('userType', type=str)
+
+    if User(username, generate_password_hash(password), userType).save_to_db():
+        app.logger.debug("Registration Successful")
+        result = {'error' : False, 'message': 'User registered successfully'}
+        return flask.jsonify(result=result)
+    else:
+        app.logger.debug("Failed Registration")
+        result = {'error': "User failed"}
+        return flask.jsonify(result = result)
+    
+
+@app.route('/_login')
+def login_user():
+    app.logger.debug("Checking Login")
+    username = request.args.get('username', type=str)
+    password = request.args.get('password', type=str)
+    userType = request.args.get('userType', type=str)
+    
+    user = find_by_username(username)
+    
+    if user and check_password_hash(user.password, password):
+        app.logger.debug("Correct Login")
+        result = {'message': 'Password is correct'}
+        return flask.jsonify(result = result)  # You'll want to return a token that verifies the user in the future
+    app.logger.debug("Failed Login")
+    result = {'error': 'User or password are incorrect'}
+    return flask.jsonify(result = result)
+
+###
+# End User Functionality
+###
+
+
 
 ###
 # Pages
@@ -181,6 +256,15 @@ def del_memo(idx):
     """
     for record in collection.find({"index": idx}):
         collection.delete_one(record)
+
+###
+# Test Pages
+###
+
+@app.route("/testUser")
+def testPage():
+    app.logger.debug("Test page entry")
+    return flask.render_template('testUser.html')
 
 
 if __name__ == "__main__":

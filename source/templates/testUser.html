@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+	<title>Test Pages</title>
+	<!-- 'viewport' is used by bootstrap to respond to device size -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- Javascript:  JQuery from a content distribution network (CDN) -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
+	</script>
+	<!-- Bootstrap includes javascript and css  (must follow jquery) -->
+	<link rel="stylesheet"
+		  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
+	</script>
+	<!-- Our own style sheet -->
+	<link rel="stylesheet" href="/static/css/memos.css" />
+</head>
+<body>
+	<div class="container">
+			<h1>Username / Password testing: </h1>
+			<div class="col-md-6">
+				<input type="text" name="username" id="username" value="tester1" />
+				<br />
+				<input type="text" name="password" id="password" value="tester1" />
+				<br />
+			</div> <!-- columns 5-10 -->
+			<div class="col-md-6">
+				<button class="submit" id="regButton">Register</button>
+				<br />
+				<button class="submit" id="logButton">Login</button>
+			</div>
+		<script type="text/javascript">
+
+var SCRIPT_ROOT = {{ request.script_root| tojson | safe }};
+var REGISTER_URL = SCRIPT_ROOT + "/_register";
+var LOGIN_URL = SCRIPT_ROOT + "/_login";
+
+function add_user() {
+	console.log("Adding a User: ");
+	var username = document.getElementById('username').value;
+	var password = document.getElementById('password').value;
+	var userType = "Volunteer";
+	console.log(REGISTER_URL);
+	$.getJSON(REGISTER_URL, {
+		username: username,
+		password: password,
+		userType: userType
+		}, function (data) {
+			var res = data.result;
+			console.log(res);
+			if (res.error) {
+				// If arrow can't figure out what the date input means:
+				console.log("Bad Info!");
+				err.style.visibility = 'visible';
+			}
+			else {
+				// Show the memos with the new one included:
+				err.style.visibility = 'hidden';
+				// Clear the memo and date from the input field.
+				document.getElementById('username').value = '';
+				document.getElementById('password').value = '';
+			}
+	});
+}
+
+	function check_user() {
+		console.log("Checking a User: ");
+		var username = document.getElementById('username').value;
+		var password = document.getElementById('password').value;
+		var userType = "Volunteer";
+		console.log(LOGIN_URL);
+		$.getJSON(LOGIN_URL, {
+			username: username,
+			password: password,
+			userType: userType
+		}, function (data) {
+			var res = data.result;
+			console.log(res);
+			if (res.error) {
+				// If arrow can't figure out what the date input means:
+				console.log("Bad Info!");
+				err.style.visibility = 'visible';
+			}
+			else {
+				// Show the memos with the new one included:
+				err.style.visibility = 'hidden';
+				// Clear the memo and date from the input field.
+				document.getElementById('username').value = '';
+				document.getElementById('password').value = '';
+			}
+		});
+}
+
+
+
+$(document).ready(function () { onPageLoad(); });
+function onPageLoad() {
+	// Add a listener for the new memo button.
+	$("#regButton").click(function () {
+		add_user()
+	});
+	$("logButton").click(function () {
+		check_user()
+	});
+}
+		</script>
+	</div>
+</body>
+</html>
