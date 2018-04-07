@@ -58,10 +58,11 @@ def index():
 # A function to display resources to the front end from the db.
 @app.route("/_disp")
 def disp():
+    filter_ohp, filter_monitor_hormones, filter_pvt_ins = False, False, False
     # resource_type = flask.request.args.get('resource_type')
     # app.logger.debug("Pulling resources of type: " + resource_type)
     resource_type = 0  # TODO temp
-    result = {"resources": get_db_entries(resource_type)}
+    result = {"resources": get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins)}
     return flask.jsonify(result=result)
 
 
@@ -106,10 +107,11 @@ def create():
     collection.insert(new)
 
     # Return to the resources:
+    filter_ohp, filter_monitor_hormones, filter_pvt_ins = False, False, False
     # resource_type = flask.request.args.get('resource_type')
     # app.logger.debug("Pulling resources of type: " + resource_type)
     resource_type = 0  #TODO temp
-    result = {"resources": get_db_entries(resource_type)}
+    result = {"resources": get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins)}
     return flask.jsonify(result=result)
 
 
@@ -120,11 +122,14 @@ def delete():
     name = flask.request.args.get('name')
     app.logger.debug("Deleting resource")
     del_resource(name)
+
     # Return to the remaining resources:
+
+    filter_ohp, filter_monitor_hormones, filter_pvt_ins = False, False, False
     # resource_type = flask.request.args.get('resource_type')
     # app.logger.debug("Pulling resources of type: " + resource_type)
     resource_type = 0  #TODO temp
-    result = {"resources": get_db_entries(resource_type)}
+    result = {"resources": get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins)}
     return flask.jsonify(result=result)
 
 
@@ -150,6 +155,7 @@ def verify():
     result = {"resources": get_unverified()}
     return flask.jsonify(result=result)
 
+
 # Error page(s).
 @app.errorhandler(404)
 def page_not_found(error):
@@ -162,8 +168,7 @@ def page_not_found(error):
 ##############
 # Functions available to the page code above
 ##############
-def get_db_entries(resource_type, filter_ohp=False,
-                   filter_monitor_hormones=False, filter_pvt_ins=False):
+def get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins):
     """
     Returns all matching resources, in a form that
     can be inserted directly in the 'session' object,
@@ -274,7 +279,7 @@ def test():
     del_resource("Rob Voorhees")
     del_resource("Douglas Austin")
     print("TEST: DELETED")
-    li = get_db_entries("Chiropractor")
+    li = get_db_entries("Chiropractor", False, False, False)
     for i in li:
         print(i)
 
@@ -284,4 +289,3 @@ if __name__ == "__main__":
     app.debug = CONFIG.DEBUG
     app.logger.setLevel(logging.DEBUG)
     app.run(port=CONFIG.PORT, host="localhost")
-
