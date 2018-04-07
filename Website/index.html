@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html> <head>
-<title>Memos</title>
+<title>Resource Directory</title>
   <!-- 'viewport' is used by bootstrap to respond to device size -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -17,40 +17,76 @@
 </script>
 
    <!-- Our own style sheet -->
-   <link rel="stylesheet" href="/static/css/memos.css" />
+   <link rel="stylesheet" href="css/style.css" />
 
 </head>
 <body>
+<div class="sorting_options">
+<!-- W3 SChools -->
+  <div class="dropdown">
+   <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Service Type
+   <span class="caret"></span></button>
+   <ul class="dropdown-menu">
+     <li><a href="#">Chiropractor</a></li>
+     <li><a href="#">Psychologist</a></li>
+     <li><a href="#">Endocrinologist</a></li>
+     <li><a href="#">Gynecologist</a></li>
+     <li><a href="#">Social Support</a></li>
+     <li><a href="#">Laser / Electrolysis</a></li>
+     <li><a href="#">Surgeon</a></li>
+     <li><a href="#">Surgery Scholarship</a></li>
+     <li><a href="#">Therapist / Counselor</a></li>
+     <li><a href="#">Voice Therapy</a></li>
+     <li><a href="#">Youth Support</a></li>
+     <li><a href="#">Hair</a></li>
+     <li><a href="#">Gender Affirming Products</a></li>
+   </ul>
+  </div>
+
+  <div class="form-check form-check-inline">
+    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+    <label class="form-check-label" for="inlineCheckbox1">Takes Oregon Health Plan</label>
+  </div>
+  <div class="form-check form-check-inline">
+    <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+    <label class="form-check-label" for="inlineCheckbox2">Takes Private Insurance</label>
+  </div>
+  <div class="form-check form-check-inline">
+    <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="option3" >
+    <label class="form-check-label" for="inlineCheckbox3">Can Monitor Hormones</label>
+  </div>
+
+</div>
+
 <div class="container">
-<!-- Flashed messages before content -->
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class=flashes>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
 
-<h2>New Memo: </h2>
-<br />
-<label> Date: </label>
-<input type="date" name="date" id="date" placeholder="YYYY-MM-DD" />
-<input name="er" id="err" type="text" value="Incorrectly formatted date!" size="26" readonly style="visibility:hidden"/>
-<br />
-<label> Contents: </label>
-<br />
-<textarea name="contents" id="contents" rows="6" cols="50" placeholder="Memo contents..." ></textarea>
-<br />
-<input id = "submit" type="submit" value="Add memo"/>
-<br />
-<br />
-
-<h2>Memos: </h2>
+<h2>Current Resources: </h2>
 <!-- Table to be filled in by js functions -->
-<table class="memo_table" id="memo_table">
+<table class="resource_table" id="resource_table">
     <tbody>
+      <div class = "resource">
+        <div class = "r_img_div"> <img src = "baa3.png" class = "r_image" width = "150" height = "150" > </div>
+        <div r_head>
+          <div class = "r_titleDiv"><h3 class = "r_title">PLACEHOLDER TITLE</h3></div>
+          <h4 class = "r_category">Category</h4>
+        </br>
+          <div class = "r_providerName">ProviderName</div>
+        </div>
+        <ul class = "r_contactInfo">
+          <li><b>Website:</b> <span class = "r_contact r_url">N/A</span></li>
+          <li><b>Email:</b> <span class = "r_contact r_email">N/A</span></li>
+          <li><b>Phone #:</b> <span class = "r_contact r_phone">N/A</span></li>
+          <li><b>Address:</b> <span class = "r_contact r_address">N/A</span></li>
+          <li><b>Office:</b> <span class = "r_contact r_officeName">N/A</span></li>
+        </ul>
+
+        <ul class = "r_perks">
+          <li class = "r_takesOHP">N</li>
+          <li class = "r_takesInsurance">N</li>
+          <li class = "r_takesInsurance">N</li>
+          <li class = "r_takesInsurance">N</li>
+          <li class = "r_takesInsurance">N</li>
+      </ul></div>
     </tbody>
 </table>
 
@@ -67,7 +103,7 @@
   function load_memos() {
     // A function to run on page load to update the page
     // with memos already in the db.
-    console.log("Displaying memos: ");
+    console.log("Displaying Entries: ");
     $.getJSON(INIT_URL, {}, function(data) {
          var memos = data.result;
          show_me_the_memos(memos)
@@ -77,7 +113,6 @@
   function add_memo() {
     // A function to add a memo with properties of the date
     // area and contents textarea.
-    console.log("Adding a memo: ");
     var date = document.getElementById('date').value;
     var contents = document.getElementById('contents').value;
     var err = document.getElementById('err');
@@ -143,20 +178,8 @@
   }
 
 
-function make_listener(btn, cur_id){
-  // A listener to attach to delete buttons.
-  $(btn).button().click(function(){
-     del_memo(cur_id);
-  });
-}
-
-
   $(document).ready(function(){onPageLoad();});
   function onPageLoad(){
-    // Add a listener for the new memo button.
-    $("#submit").button().click(function(){
-      add_memo()
-    });
     // Display the memos already in the database.
     load_memos()
   }

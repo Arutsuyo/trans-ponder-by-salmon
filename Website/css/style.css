@@ -1,0 +1,70 @@
+.sorting_options{
+  background-color: #DDDDDD;
+  padding: 10px;
+}
+.dropdown{
+  padding-bottom: 5px;
+  display: inline-block;
+  padding-right: 20px;
+}
+.resource{
+  background-color: #EEEEEE;
+  border-radius: 10px;
+}
+.r_head{
+  display: inline-block;
+  background-color: #00FF66;
+  padding: 10px;
+}
+.r_img_div{
+  display: inline-block;
+  padding: 5px;
+  float:left;
+  border-radius: 10px;
+}
+.r_image{
+  border-radius: 10px;
+}
+.r_category{
+  display: inline-block;
+  float:right;
+  padding-right: 10px;
+}
+.r_titleDiv{
+  display: inline-block;
+  padding-left: 10px;
+}
+
+.r_providerName{
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+}
+
+.r_contactInfo{
+  list-style: none;
+  padding-left: 30px;
+  display: inline-block;
+
+}
+.r_perks{
+  float: right;
+  padding-right: 30px;
+  list-style: none;
+  display: inline-block;
+  padding-right: 10px;
+}
+.r_contact{
+  padding-left: 10px;
+  padding-right: 10px;
+  display: inline-block;
+}
+.r_img_div{
+   max-width: 100%;
+   height: auto;
+}
+.form-check-inline{
+  display: inline-block;
+  padding-left: 30px;
+}
