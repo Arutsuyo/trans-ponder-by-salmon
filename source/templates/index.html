@@ -6,11 +6,8 @@
      <meta charset="UTF-8">
     <!-- 'viewport' is used by bootstrap to respond to device size -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <!-- Javascript:  JQuery from a content distribution network (CDN) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
-    </script>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- Bootstrap includes javascript and css  (must follow jquery) -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
@@ -18,81 +15,13 @@
 
     <!-- Our own style sheet -->
     <link rel="stylesheet" href="static/css/style.css" />
-    <script type="text/javascript">
-          var SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-          var CREATE_URL = SCRIPT_ROOT + "/_create";
-          var DEL_URL = SCRIPT_ROOT + "/_del";
-          var INIT_URL = SCRIPT_ROOT + "/_disp";
-
-          function load_resources() {
-            // A function to run on page load to update the page
-            // with resources already in the db.
-            console.log("Displaying Entries: ");
-            $.getJSON(INIT_URL, {}, function(data) {
-                 var resources = data.result;
-                 show_me_the_resources(resources)
-            });
-          }
-
-          function show_me_the_resources(recs){
-            var resources = recs.resources;
-            var table = document.getElementById('resource_table');
-            // First, clear the old resource table. Uses some code from:
-            // https://stackoverflow.com/questions/3955229/remove-all-child-elements-of-a-dom-node-in-javascript
-            while (table.firstChild) {
-                table.removeChild(table.firstChild);
-            }
-
-            var resource_table = document.createElement('tbody');
-            table.appendChild(resource_table);
-
-            // Add the current resources to the table
-            console.log("Showing " + resources.length + " resources.");
-
-            for (var i = 0; i < resources.length; i++) {
-              console.log(resources[i]);
-
-              // First a row with the date:
-              resource_table.insertRow().outerHTML = "<tr>" + resources[i].disp_date + ": </tr>";
-              // Next a textarea with the resource and a delete button next to it
-              resource_table.insertRow().outerHTML = "<tr class='the_row'> <td> <textarea readonly name='resource' rows='4' cols='30'>"
-                  + resources[i].text
-                  + "</textarea> </td> <td> <input name='remove' id='remove' type='submit' value='Delete'/> </td> </tr>";
-
-              // Index to the delete button that was just created:
-              var resource_row = resource_table.rows[3*i + 1].childNodes;
-              var del_btn = $(resource_row[3]).parents(".the_row").find("input[name='remove']");
-              // Add a listener for that button
-              var btn_id = resources[i].index;
-              make_listener(del_btn, btn_id)
-            }
-          }
-
-          $(document).ready(function(){onPageLoad();});
-          function onPageLoad(){
-            // Display the resources already in the database.
-            load_resources()
-          }
-          $(document).ready(function(){
-            console.log("Page loaded");
-            stuff_from_database();
-            populate_cal_table();
-          $('input[type=checkbox]').change(
-            function(){
-                if (this.checked) {
-                    alert('checked');
-                }
-          });
-        });
-    </script>
-</head>
-
+    <script src="static/script/directory.js"> </script>
 <body>
     <img id="tplogo" src="static/img/tplogo.png" height="90px" width="90px">
-    <div id="sorting_options">
+    <div class = "top-bar" id="sorting_options">
         <!-- based on instructions from W3 Schools -->
         <div id="dropdown">
-            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Service Type
+            <button class="btn btn-warning btn-sm dropdown-toggle btn-group" type="button" data-toggle="dropdown">Service Type
      <span class="caret"></span></button>
             <ul class="dropdown-menu">
                 <li><a href="#">Chiropractor</a></li>
@@ -110,23 +39,42 @@
                 <li><a href="#">Youth Support</a></li>
             </ul>
         </div>
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+          <label class="btn btn-group	btn-default">
+            <input type="checkbox" name="options" id="option1" autocomplete="off" > Oregon Health Plan
+          </label>
+          <label class="btn btn-group	 btn-default">
+            <input type="checkbox" name="options" id="option2" autocomplete="off"> Private Insurance
+          </label>
+          <label class="btn btn-group btn-default">
+            <input type="checkbox" name="options" id="option3" autocomplete="off"> Monitors Hormones
+          </label>
+        </div>
+        <a class="btn btn-default btn-xs" id = "submit-button" href="submit" role="button">Submit new Entry</a>
+        
+        <form class="dropdown-menu p-4">
+          <div class="form-group">
+            <label for="exampleDropdownFormEmail2">Email address</label>
+            <input type="email" class="form-control" id="exampleDropdownFormEmail2" placeholder="email@example.com">
+          </div>
+          <div class="form-group">
+            <label for="exampleDropdownFormPassword2">Password</label>
+            <input type="password" class="form-control" id="exampleDropdownFormPassword2" placeholder="Password">
+          </div>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="dropdownCheck2">
+            <label class="form-check-label" for="dropdownCheck2">
+              Remember me
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary">Sign in</button>
+        </form>
 
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="box_OHP" value="option1">
-            <label class="form-check-label" for="inlineCheckbox1">Takes Oregon Health Plan</label>
-        </div>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="box_PI" value="option2">
-            <label class="form-check-label" for="inlineCheckbox2">Takes Private Insurance</label>
-        </div>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="box_MH" value="option3">
-            <label class="form-check-label" for="inlineCheckbox3">Can Monitor Hormones</label>
-        </div>
+</div>
+    </div>
 
     </div>
     <div class="container">
-
         <h2>Current Resources: </h2>
         <!-- Table to be filled in by js functions -->
         <table id="resource_table">
@@ -160,6 +108,10 @@
             </tbody>
         </table>
         <br />
+    </div>
+    <div id = "donation-box">
+      PLACEHOLDER
+    </br></br></br>
     </div>
 </body>
 <footer>

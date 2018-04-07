@@ -158,6 +158,15 @@ def index():
     app.logger.debug("Main page entry")
     return flask.render_template('index.html')
 
+@app.route("/login")
+def login():
+    app.logger.debug("Login Page")
+    return flask.render_template('login.html')
+
+@app.route("/submit")
+def submit():
+    app.logger.debug("Submission Page")
+    return flask.render_template('submit.html')
 
 # A function to display resources to the front end from the db.
 @app.route("/_disp")
