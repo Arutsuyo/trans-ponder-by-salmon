@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>Memos</title>
+  <!-- 'viewport' is used by bootstrap to respond to device size -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Javascript:  JQuery from a content distribution network (CDN) -->
+  <script
+     src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
+  </script>
+
+  <!-- Bootstrap includes javascript and css  (must follow jquery) -->
+  <link rel="stylesheet"
+   href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+   <script
+    src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
+</script>
+
+   <!-- Our own style sheet -->
+   <link rel="stylesheet" href="/static/css/memos.css" />
+
+</head>
+<body>
+<div class="container">
+<!-- Flashed messages before content -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<h2>New Memo: </h2>
+<br />
+<label> Date: </label>
+<input type="date" name="date" id="date" placeholder="YYYY-MM-DD" />
+<input name="er" id="err" type="text" value="Incorrectly formatted date!" size="26" readonly style="visibility:hidden"/>
+<br />
+<label> Contents: </label>
+<br />
+<textarea name="contents" id="contents" rows="6" cols="50" placeholder="Memo contents..." ></textarea>
+<br />
+<input id = "submit" type="submit" value="Add memo"/>
+<br />
+<br />
+
+<h2>Memos: </h2>
+<!-- Table to be filled in by js functions -->
+<table class="memo_table" id="memo_table">
+    <tbody>
+    </tbody>
+</table>
+
+<br />  <br />  <br />
+
+
+<script type="text/javascript">
+
+  var SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  var CREATE_URL = SCRIPT_ROOT + "/_create";
+  var DEL_URL = SCRIPT_ROOT + "/_del";
+  var INIT_URL = SCRIPT_ROOT + "/_disp";
+
+  function load_memos() {
+    // A function to run on page load to update the page
+    // with memos already in the db.
+    console.log("Displaying memos: ");
+    $.getJSON(INIT_URL, {}, function(data) {
+         var memos = data.result;
+         show_me_the_memos(memos)
+    });
+  }
+
+  function add_memo() {
+    // A function to add a memo with properties of the date
+    // area and contents textarea.
+    console.log("Adding a memo: ");
+    var date = document.getElementById('date').value;
+    var contents = document.getElementById('contents').value;
+    var err = document.getElementById('err');
+    $.getJSON(CREATE_URL, {date: date, contents: contents}, function(data){
+      var memos = data.result;
+      console.log(memos);
+      if (data.result.error) {
+        // If arrow can't figure out what the date input means:
+        console.log("Bad date!");
+        err.style.visibility='visible';
+      }
+      else {
+        // Show the memos with the new one included:
+        err.style.visibility='hidden';
+        // Clear the memo and date from the input field.
+        document.getElementById('date').value = '';
+        document.getElementById('contents').value = '';
+        show_me_the_memos(memos);
+      }
+    });
+  }
+
+  function del_memo(id) {
+    console.log("Deleting a memo.");
+    $.getJSON(DEL_URL, {id: id}, function(data){
+      var memos = data.result;
+      console.log(memos);
+      // Show the memos with the deleted one removed:
+      show_me_the_memos(memos)
+    });
+  }
+
+  function show_me_the_memos(mems){
+    var memos = mems.memos;
+    var table = document.getElementById('memo_table');
+    // First, clear the old memo table. Uses some code from:
+    // https://stackoverflow.com/questions/3955229/remove-all-child-elements-of-a-dom-node-in-javascript
+    while (table.firstChild) {
+        table.removeChild(table.firstChild);
+    }
+    var memo_table = document.createElement('tbody');
+    table.appendChild(memo_table);
+
+    // Add the current memos to the table
+    console.log("Showing " + memos.length + " memos.");
+    for (var i = 0; i < memos.length; i++) {
+      console.log(memos[i]);
+      // First a row with the date:
+      memo_table.insertRow().outerHTML = "<tr>" + memos[i].disp_date + ": </tr>";
+      // Next a textarea with the memo and a delete button next to it
+      memo_table.insertRow().outerHTML = "<tr class='the_row'> <td> <textarea readonly name='memo' rows='4' cols='30'>"
+          + memos[i].text
+          + "</textarea> </td> <td> <input name='remove' id='remove' type='submit' value='Delete'/> </td> </tr>";
+      // Next an empty row for clarity.
+      memo_table.insertRow().outerHTML = "<tr ><br/></tr>";
+      // Index to the delete button that was just created:
+      var memo_row = memo_table.rows[3*i + 1].childNodes;
+      var del_btn = $(memo_row[3]).parents(".the_row").find("input[name='remove']");
+      // Add a listener for that button
+      var btn_id = memos[i].index;
+      make_listener(del_btn, btn_id)
+    }
+  }
+
+
+function make_listener(btn, cur_id){
+  // A listener to attach to delete buttons.
+  $(btn).button().click(function(){
+     del_memo(cur_id);
+  });
+}
+
+
+  $(document).ready(function(){onPageLoad();});
+  function onPageLoad(){
+    // Add a listener for the new memo button.
+    $("#submit").button().click(function(){
+      add_memo()
+    });
+    // Display the memos already in the database.
+    load_memos()
+  }
+</script>
+</div>
+</body>
+</html>
