@@ -195,22 +195,23 @@ def create():
     address = flask.request.args.get('address')
 
     # Add a new entry to the database with the contents submitted by the user.
-    new = {"website": website,
-           "paperwork_not_only_mf": paperwork_not_only_mf,
-           "paperwork_asks_for_pronoun": paperwork_asks_for_pronoun,
-           "notes": notes,
-           "can_monitor_hormones": can_monitor_hormones,
-           "sliding_scale": sliding_scale,
-           "name": name,
-           "email": email,
-           "phone": phone,
-           "type": type,
-           "diversity_aware": diversity_aware,
-           "takes_private_ins": takes_private_ins,
-           "takes_OHP": takes_ohp,
-           "office_name": office_name,
-           "address": address,
-           "verified": False}
+    new = new = {"category": info[0],
+           "name": info[1],
+           "office_name": info[2],
+           "address": info[3],
+           "phone": info[4],
+           "email": info[5],
+           "website": info[6],
+           "takes_OHP": info[7],
+           "takes_private_ins": info[8],
+           "sliding_scale": info[9],
+           "diversity_aware": info[10],
+           "paperwork_not_only_mf": info[11],
+           "paperwork_asks_for_pronoun": info[12],
+           "can_monitor_hormones": info[13],
+           "notes": info[14],
+           "verified": False
+           }
     collection.insert(new)
 
     # Return to the resources:
