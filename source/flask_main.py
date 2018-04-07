@@ -1,11 +1,9 @@
 """
-Author: Sam Champer
-Flask web app connects to Mongo database.
-Keep a simple list of dated memoranda.
-
-Representation conventions for dates:
-   - Uses arrow objects to manipulate dates, but iso date strings for all other
-     purposes. Dates shown to user will be formatted by a humanize function.
+Author: Team Salmon
+Flask web app connecting trans*ponder database and website.
+The flask web server connects with a mongo database,
+where user submitted resources are stored and can be
+verified by users with appropriate privileges.
 """
 
 import flask
@@ -22,7 +20,6 @@ from pymongo import MongoClient
 import config
 CONFIG = config.configuration()
 
-
 MONGO_CLIENT_URL = "mongodb://{}:{}@{}:{}/{}".format(
     CONFIG.DB_USER,
     CONFIG.DB_USER_PW,
@@ -30,13 +27,12 @@ MONGO_CLIENT_URL = "mongodb://{}:{}@{}:{}/{}".format(
     CONFIG.DB_PORT,
     CONFIG.DB)
 
-print("Using URL '{}'".format(MONGO_CLIENT_URL))
+if CONFIG.DEBUG is True:
+    print("Using URL '{}'".format(MONGO_CLIENT_URL))
 
-###
-# Globals
-###
 app = flask.Flask(__name__)
 app.secret_key = CONFIG.SECRET_KEY
+
 
 ####
 # Database connection per server process
@@ -48,7 +44,6 @@ try:
 except:
     print("Failure opening database. Is Mongo running? Correct password?")
     sys.exit(1)
-
 
 ###
 # Pages
@@ -191,4 +186,5 @@ def del_memo(idx):
 if __name__ == "__main__":
     app.debug = CONFIG.DEBUG
     app.logger.setLevel(logging.DEBUG)
-    app.run(port=CONFIG.PORT, host="0.0.0.0")
+    app.run(port=CONFIG.PORT, host="localhost")
+    
