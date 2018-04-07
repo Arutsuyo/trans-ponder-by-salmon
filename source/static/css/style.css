@@ -13,17 +13,33 @@ body{
   margin-left: 30px;
   z-index: 10;
 }
+#submit-button{
+  float:right;
+  margin: 1%;
+}
 .dropdown-menu{
   margin-left: 150px;
 }
 .container{
-  width:auto;
-  background-color: #f9f6e3;
+  display:inline-block;
+  white-space:nowrap;
+  width:58%;
   margin-left: 150px;
-  margin-right: 28%;
-  margin-bottom: 30px;
+  min-height: 400px;
+  background-color: #f9f6e3;
 }
-#sorting_options{
+
+#donation-box{
+  display:inline-block;
+  float:right;
+  white-space:nowrap;
+  width:25%;
+  min-height: 400px;
+  margin-right: 2%;
+  background-color: #EEEEEE;
+}
+.top-bar{
+  white-space:nowrap;
   float:top;
   position:fixed;
   background-color: white;
@@ -32,11 +48,22 @@ body{
   padding:10px;
   height: 55px;
   padding-left: 200px;
+  padding-right: 5%;
 }
 #dropdown{
   margin-bottom: 5px;
   display: inline-block;
-  margin-right: 20px;
+}
+#log-in{
+  float:right;
+}
+.btn-group{
+  display:inline-block;
+}
+#tl-button-box{
+  float:right;
+  display:inline-block;
+  background-color: red;
 }
 .resource{
   background-color: #EEEEEE;
@@ -72,7 +99,6 @@ body{
   margin-right: 10px;
   margin-bottom: 10px;
 }
-
 #r_contactInfo{
   list-style: none;
   margin-left: 30px;
