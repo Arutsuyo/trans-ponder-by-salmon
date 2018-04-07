@@ -58,8 +58,11 @@ class User:
         self.password = password
         self.userType = userType
     
+    # ***ONLY EVER CALL WHEN CHAINED AND USING generate_password_hash(pword) ***
+    # such as: User(username, generate_password_hash(password), userType).save_to_db()
+    # This means no passwords are ever saved in the database, only the hashs of the passwords
     def save_to_db(self):
-        app.logger.debug("Saving. . .")
+        app.logger.debug("Checking is User exists")
         if find_by_username(self.username):
             app.logger.debug("User Already Exists")
             return False
@@ -70,15 +73,26 @@ class User:
                 "password" : self.password,
                 "userType" : self.userType,
                 }
-            collection.insert(new)
-            app.logger.debug("Inserted")
-            return True
+            res = collection.insert(new)
+            if res["nInserted"] > 0:
+                app.logger.debug("Created")
+                return True
+            elif hasattr(res, "writeConcernError"):
+                app.logger.debug(res["writeConcernError"])
+                return False
+            elif hasattr(res, "writeError"):
+                app.logger.debug(res["writeError"])
+                return False
+            else:
+                app.logger.debug("Unknown insertion error")
+                return False
     #end save_to_db
     
+# Find user by username, if it exists, return the record, if it doesn't, return False
 def find_by_username(uname):
     app.logger.debug("Finding User: " + uname)
     for record in collection.find({ "username" : uname}):
-        app.logger.debug(record)
+        app.logger.debug(record['username'], record['userType'])
         return User(record['username'], record['password'], record['userType'])
     return False
 #end find_by_username
@@ -86,15 +100,18 @@ def find_by_username(uname):
 @app.route('/_register')
 def register_user():
     app.logger.debug("Checking Registration")
+    # Get User information
     username = request.args.get('username', type=str)
     password = request.args.get('password', type=str)
     userType = request.args.get('userType', type=str)
 
+    # Try and register user
     if User(username, generate_password_hash(password), userType).save_to_db():
         app.logger.debug("Registration Successful")
         result = {'message': 'User registered successfully'}
         return flask.jsonify(result=result)
     else:
+        # If failed, See errors possible in save_to_db()
         app.logger.debug("Failed Registration")
         result = {'error': "User failed"}
         return flask.jsonify(result = result)
@@ -106,23 +123,24 @@ def login_user():
     password = request.args.get('password', type=str)
     userType = request.args.get('userType', type=str)
     
+    # See if user exists
     user = find_by_username(username)
     if user:
+        # Make sure hashes match the password (no passwords are ever saved)
         if check_password_hash(user.password, password):
             app.logger.debug("Correct Login")
             result = {'message': 'Password is correct'}
             return flask.jsonify(result = result)  # You'll want to return a token that verifies the user in the future
         else:
+            # Hashes didn't match
             app.logger.debug("Password failed")
             result = {"error": "password failed", "message" : "login failed"}
             return flask.jsonify(result = result)
     else:
+        # User didn't exist
         app.logger.debug("No User Exists")
         result = {"error": "username failed", "message" : "login failed"}
         return flask.jsonify(result = result)
-    app.logger.debug("Failed Login")
-    result = {'error': 'User or password are incorrect'}
-    return flask.jsonify(result = result)
 
 ###
 # End User Functionality
