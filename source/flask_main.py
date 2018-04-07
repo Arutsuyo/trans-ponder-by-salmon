@@ -60,7 +60,7 @@ def index():
 def disp():
     # resource_type = flask.request.args.get('resource_type')
     # app.logger.debug("Pulling resources of type: " + resource_type)
-    resource_type = 0 #temp
+    resource_type = 0  # TODO temp
     result = {"resources": get_db_entries(resource_type)}
     return flask.jsonify(result=result)
 
@@ -82,7 +82,7 @@ def create():
     type = flask.request.args.get('type')
     diversity_aware = flask.request.args.get('diversity_aware')
     takes_private_ins = flask.request.args.get('takes_private_ins')
-    takes_OHP = flask.request.args.get('takes_OHP')
+    takes_ohp = flask.request.args.get('takes_OHP')
     office_name = flask.request.args.get('office_name')
     address = flask.request.args.get('address')
 
@@ -99,7 +99,7 @@ def create():
            "type": type,
            "diversity_aware": diversity_aware,
            "takes_private_ins": takes_private_ins,
-           "takes_OHP": takes_OHP,
+           "takes_OHP": takes_ohp,
            "office_name": office_name,
            "address": address,
            "verified": False}
@@ -108,7 +108,7 @@ def create():
     # Return to the resources:
     # resource_type = flask.request.args.get('resource_type')
     # app.logger.debug("Pulling resources of type: " + resource_type)
-    resource_type = 0 #temp
+    resource_type = 0  #TODO temp
     result = {"resources": get_db_entries(resource_type)}
     return flask.jsonify(result=result)
 
@@ -123,14 +123,18 @@ def delete():
     # Return to the remaining resources:
     # resource_type = flask.request.args.get('resource_type')
     # app.logger.debug("Pulling resources of type: " + resource_type)
-    resource_type = 0 #temp
+    resource_type = 0  #TODO temp
     result = {"resources": get_db_entries(resource_type)}
     return flask.jsonify(result=result)
 
 
-# Get unverified resources
+# Get unverified resources.
 @app.route("/_unverified")
 def unverified():
+    # This page should only be accessible to volunteer
+    # users such that they can go through unverified
+    # resources and mark them verified or delete
+    # them as appropriate.
     result = {"resources": get_unverified()}
     return flask.jsonify(result=result)
 
@@ -138,7 +142,7 @@ def unverified():
 # verify a resource
 @app.route("/_verify")
 def verify():
-    # Get the name of the resource to delete from user:
+    # Get the name of the resource to verify from user input:
     name = flask.request.args.get('name')
     app.logger.debug("verifying resource")
     verify_resource(name)
@@ -146,7 +150,7 @@ def verify():
     result = {"resources": get_unverified()}
     return flask.jsonify(result=result)
 
-
+# Error page(s).
 @app.errorhandler(404)
 def page_not_found(error):
     app.logger.debug("Page not found")
@@ -158,16 +162,28 @@ def page_not_found(error):
 ##############
 # Functions available to the page code above
 ##############
-def get_db_entries(resource_type):
+def get_db_entries(resource_type, filter_ohp=False,
+                   filter_monitor_hormones=False, filter_pvt_ins=False):
     """
     Returns all matching resources, in a form that
     can be inserted directly in the 'session' object,
     in sorted order.
+    Can have three specified filter criteria,
+    which default to turned off.
     """
     records = []
     for record in collection.find({"type": resource_type}):
+        matching_record = True
         del record['_id']
-        if record[verified] is True:
+        if record["verified"] is False:
+            matching_record = False
+        if filter_ohp and record["takes_OHP"] is not True:
+            matching_record = False
+        if filter_monitor_hormones and record["can_monitor_hormones"] is not True:
+            matching_record = False
+        if filter_pvt_ins and record["takes_private_ins"] is not True:
+            matching_record = False
+        if matching_record:
             records.append(record)
     # Sort the records by arrow date:
     records.sort(key=lambda i: i['name'])
@@ -199,11 +215,73 @@ def verify_resource(name):
     """
     Marks a resource as verified.
     """
-    for record in collection.find({"name": name}):
-        collection.delete_one(record)
+    # for record in collection.find({"name": name}):
+    collection.update_one({"name": name},
+                          {"$set": {"verified": True }})
+
+
+def test():
+    print("TESTING SOME FUNCTIONSSSSSSSSSSSSSSSs")
+    new = {"website": "http://www.eugenecompletewellness.com/",
+    "paperwork_not_only_mf": "",
+    "paperwork_asks_for_pronoun": "",
+    "notes": "",
+    "can_monitor_hormones": True,
+    "sliding_scale": "",
+    "name": "Rob Voorhees",
+    "email": "info@eugenecompletewellness.com",
+    "phone": "541-653-9324",
+    "type": "Chiropractor",
+    "diversity_aware": "",
+    "takes_private_ins": True,
+    "takes_OHP": "",
+    "office_name": "Eugene Complete Wellness",
+    "address": "240 E 12th Ave, Eugene, OR 97401",
+           "verified": False}
+    collection.insert(new)
+
+    new = {"website": "www.womenscare.com",
+    "paperwork_not_only_mf": "No, though they say they are updating this soon",
+    "paperwork_asks_for_pronoun": "No.",
+    "notes": "",
+    "can_monitor_hormones": True,
+    "sliding_scale": "",
+    "name": "Douglas Austin",
+    "email": "",
+    "phone": "541-683-1559",
+    "type": "Endocrinologist",
+    "diversity_aware": "No.",
+    "takes_private_ins": True,
+    "takes_OHP": False,
+    "office_name": "Womens Care",
+    "address": "590 Country Club Pkwy B, Eugene, OR 97401",
+           "verified": False}
+    collection.insert(new)
+
+    li = get_unverified()
+    for i in li:
+        print(i)
+    verify_resource("Rob Voorhees")
+    verify_resource("Douglas Austin")
+    print("TEST VERIFY")
+    li = get_unverified()
+    for i in li:
+        print(i)
+    print("TEST GET Endocrinologist")
+    li = get_db_entries("Endocrinologist", False, True, False)
+    for i in li:
+        print(i)
+    del_resource("Rob Voorhees")
+    del_resource("Douglas Austin")
+    print("TEST: DELETED")
+    li = get_db_entries("Chiropractor")
+    for i in li:
+        print(i)
 
 
 if __name__ == "__main__":
+    test()
     app.debug = CONFIG.DEBUG
     app.logger.setLevel(logging.DEBUG)
     app.run(port=CONFIG.PORT, host="localhost")
+
