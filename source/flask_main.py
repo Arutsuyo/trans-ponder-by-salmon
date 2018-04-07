@@ -59,26 +59,29 @@ class User:
         self.userType = userType
     
     def save_to_db(self):
+        app.logger.debug("Saving. . .")
         if find_by_username(self.username):
-            print("User Already Exists")
+            app.logger.debug("User Already Exists")
             return False
         else:
-            print("Creating new user")
+            app.logger.debug("Creating new user")
             new = {
-                "Username" : self.username,
+                "username" : self.username,
                 "password" : self.password,
                 "userType" : self.userType,
                 }
             collection.insert(new)
+            app.logger.debug("Inserted")
             return True
     #end save_to_db
     
 def find_by_username(uname):
+    app.logger.debug("Finding User: " + uname)
     for record in collection.find({ "username" : uname}):
+        app.logger.debug(record)
         return User(record['username'], record['password'], record['userType'])
     return False
 #end find_by_username
-
 
 @app.route('/_register')
 def register_user():
@@ -89,14 +92,13 @@ def register_user():
 
     if User(username, generate_password_hash(password), userType).save_to_db():
         app.logger.debug("Registration Successful")
-        result = {'error' : False, 'message': 'User registered successfully'}
+        result = {'message': 'User registered successfully'}
         return flask.jsonify(result=result)
     else:
         app.logger.debug("Failed Registration")
         result = {'error': "User failed"}
         return flask.jsonify(result = result)
     
-
 @app.route('/_login')
 def login_user():
     app.logger.debug("Checking Login")
@@ -105,11 +107,19 @@ def login_user():
     userType = request.args.get('userType', type=str)
     
     user = find_by_username(username)
-    
-    if user and check_password_hash(user.password, password):
-        app.logger.debug("Correct Login")
-        result = {'message': 'Password is correct'}
-        return flask.jsonify(result = result)  # You'll want to return a token that verifies the user in the future
+    if user:
+        if check_password_hash(user.password, password):
+            app.logger.debug("Correct Login")
+            result = {'message': 'Password is correct'}
+            return flask.jsonify(result = result)  # You'll want to return a token that verifies the user in the future
+        else:
+            app.logger.debug("Password failed")
+            result = {"error": "password failed", "message" : "login failed"}
+            return flask.jsonify(result = result)
+    else:
+        app.logger.debug("No User Exists")
+        result = {"error": "username failed", "message" : "login failed"}
+        return flask.jsonify(result = result)
     app.logger.debug("Failed Login")
     result = {'error': 'User or password are incorrect'}
     return flask.jsonify(result = result)

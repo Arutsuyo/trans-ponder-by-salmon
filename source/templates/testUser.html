@@ -37,10 +37,10 @@ var LOGIN_URL = SCRIPT_ROOT + "/_login";
 
 function add_user() {
 	console.log("Adding a User: ");
-	var username = document.getElementById('username').value;
-	var password = document.getElementById('password').value;
+	var username = $('#username').val();
+	var password = $('#password').val();
 	var userType = "Volunteer";
-	console.log(REGISTER_URL);
+	console.log("User: ", username, password, userType);
 	$.getJSON(REGISTER_URL, {
 		username: username,
 		password: password,
@@ -49,26 +49,22 @@ function add_user() {
 			var res = data.result;
 			console.log(res);
 			if (res.error) {
-				// If arrow can't figure out what the date input means:
-				console.log("Bad Info!");
-				err.style.visibility = 'visible';
+				console.log(res.error);
 			}
 			else {
-				// Show the memos with the new one included:
-				err.style.visibility = 'hidden';
-				// Clear the memo and date from the input field.
-				document.getElementById('username').value = '';
-				document.getElementById('password').value = '';
+				console.log("User added")
+				$('#username').val('');
+				$('#password').val('');
 			}
 	});
 }
 
 	function check_user() {
 		console.log("Checking a User: ");
-		var username = document.getElementById('username').value;
-		var password = document.getElementById('password').value;
+		var username = $('#username').val();
+		var password = $('#password').val();
 		var userType = "Volunteer";
-		console.log(LOGIN_URL);
+		console.log("User: ", username, password, userType);
 		$.getJSON(LOGIN_URL, {
 			username: username,
 			password: password,
@@ -77,16 +73,12 @@ function add_user() {
 			var res = data.result;
 			console.log(res);
 			if (res.error) {
-				// If arrow can't figure out what the date input means:
-				console.log("Bad Info!");
-				err.style.visibility = 'visible';
+				console.log(res.error);
 			}
 			else {
-				// Show the memos with the new one included:
-				err.style.visibility = 'hidden';
-				// Clear the memo and date from the input field.
-				document.getElementById('username').value = '';
-				document.getElementById('password').value = '';
+				console.log("Login Successful")
+				$('#username').val('');
+				$('#password').val('');
 			}
 		});
 }
@@ -96,10 +88,14 @@ function add_user() {
 $(document).ready(function () { onPageLoad(); });
 function onPageLoad() {
 	// Add a listener for the new memo button.
+	console.log("Adding Button reg")
 	$("#regButton").click(function () {
+		console.log("reg clicked")
 		add_user()
 	});
-	$("logButton").click(function () {
+	console.log("Adding button log")
+	$("#logButton").click(function () {
+		console.log("Log Clicked")
 		check_user()
 	});
 }
