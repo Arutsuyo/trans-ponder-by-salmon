@@ -9,6 +9,9 @@ verified by users with appropriate privileges.
 import sys
 import logging
 import flask  # Web server tool.
+from werkzeug.security import generate_password_hash, check_password_hash # User authentication.
+
+
 import arrow  # For times and times.
 from pymongo import MongoClient  # Mongo database
 import config  # Get config settings from credentials file
@@ -39,9 +42,110 @@ try:
     dbclient = MongoClient(MONGO_CLIENT_URL)
     db = getattr(dbclient, str(CONFIG.DB))
     collection = db.resources
+    users_collection = db.users
 except:
     print("Failure opening database. Is Mongo running? Correct password?")
     sys.exit(1)
+
+
+###
+# User Functionality
+###
+class User:
+    def __init__(self, username, password, userType):
+        self.username = username
+        self.password = password
+        self.userType = userType
+
+    # ***ONLY EVER CALL WHEN CHAINED AND USING generate_password_hash(pword) ***
+    # such as: User(username, generate_password_hash(password), userType).save_to_db()
+    # This means no passwords are ever saved in the database, only the hashs of the passwords
+    def save_to_db(self):
+        app.logger.debug("Checking is User exists")
+        if find_by_username(self.username):
+            app.logger.debug("User Already Exists")
+            return False
+        else:
+            app.logger.debug("Creating new user")
+            new = {
+                "username": self.username,
+                "password": self.password,
+                "userType": self.userType,
+            }
+            res = users_collection.insert(new)
+            if res["nInserted"] > 0:
+                app.logger.debug("Created")
+                return True
+            elif hasattr(res, "writeConcernError"):
+                app.logger.debug(res["writeConcernError"])
+                return False
+            elif hasattr(res, "writeError"):
+                app.logger.debug(res["writeError"])
+                return False
+            else:
+                app.logger.debug("Unknown insertion error")
+                return False
+                # end save_to_db
+
+
+# Find user by username, if it exists, return the record, if it doesn't, return False
+def find_by_username(uname):
+    app.logger.debug("Finding User: " + uname)
+    for record in users_collection.find({"username": uname}):
+        app.logger.debug(record['username'], record['userType'])
+        return User(record['username'], record['password'], record['userType'])
+    return False
+# end find_by_username
+
+
+@app.route('/_register')
+def register_user():
+    app.logger.debug("Checking Registration")
+    # Get User information
+    username = flask.request.args.get('username', type=str)
+    password = flask.request.args.get('password', type=str)
+    userType = flask.request.args.get('userType', type=str)
+
+    # Try and register user
+    if User(username, generate_password_hash(password), userType).save_to_db():
+        app.logger.debug("Registration Successful")
+        result = {'message': 'User registered successfully'}
+        return flask.jsonify(result=result)
+    else:
+        # If failed, See errors possible in save_to_db()
+        app.logger.debug("Failed Registration")
+        result = {'error': "User failed"}
+        return flask.jsonify(result=result)
+
+
+@app.route('/_login')
+def login_user():
+    app.logger.debug("Checking Login")
+    username = flask.request.args.get('username', type=str)
+    password = flask.request.args.get('password', type=str)
+    userType = flask.request.args.get('userType', type=str)
+
+    # See if user exists
+    user = find_by_username(username)
+    if user:
+        # Make sure hashes match the password (no passwords are ever saved)
+        if check_password_hash(user.password, password):
+            app.logger.debug("Correct Login")
+            result = {'message': 'Password is correct'}
+            return flask.jsonify(result=result)  # You'll want to return a token that verifies the user in the future
+        else:
+            # Hashes didn't match
+            app.logger.debug("Password failed")
+            result = {"error": "password failed", "message": "login failed"}
+            return flask.jsonify(result=result)
+    else:
+        # User didn't exist
+        app.logger.debug("No User Exists")
+        result = {"error": "username failed", "message": "login failed"}
+        return flask.jsonify(result=result)
+###
+# End User Functionality
+###
 
 
 ###
@@ -58,10 +162,13 @@ def index():
 # A function to display resources to the front end from the db.
 @app.route("/_disp")
 def disp():
-    filter_ohp, filter_monitor_hormones, filter_pvt_ins = False, False, False
     # resource_type = flask.request.args.get('resource_type')
+    # filter_ohp = flask.request.args.get('filter_ohp', type=bool)
+    # filter_monitor_hormones = flask.request.args.get('filter_monitor_hormones', type=bool)
+    # filter_pvt_ins = flask.request.args.get('filter_pvt_ins', type=bool)
     # app.logger.debug("Pulling resources of type: " + resource_type)
     resource_type = 0  # TODO temp
+    filter_ohp, filter_monitor_hormones, filter_pvt_ins = False, False, False
     result = {"resources": get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins)}
     return flask.jsonify(result=result)
 
@@ -72,18 +179,18 @@ def create():
     app.logger.debug("Uploading new resource to db.")
     # Get resource contents from user.
     website = flask.request.args.get('website')
-    paperwork_not_only_mf = flask.request.args.get('paperwork_not_only_mf')
-    paperwork_asks_for_pronoun = flask.request.args.get('paperwork_asks_for_pronoun')
+    paperwork_not_only_mf = flask.request.args.get('paperwork_not_only_mf', type=bool)
+    paperwork_asks_for_pronoun = flask.request.args.get('paperwork_asks_for_pronoun', type=bool)
     notes = flask.request.args.get('notes')
-    can_monitor_hormones = flask.request.args.get('can_monitor_hormones')
+    can_monitor_hormones = flask.request.args.get('can_monitor_hormones', type=bool)
     sliding_scale = flask.request.args.get('sliding_scale')
     name = flask.request.args.get('name')
     email = flask.request.args.get('email')
     phone = flask.request.args.get('phone')
     type = flask.request.args.get('type')
     diversity_aware = flask.request.args.get('diversity_aware')
-    takes_private_ins = flask.request.args.get('takes_private_ins')
-    takes_ohp = flask.request.args.get('takes_OHP')
+    takes_private_ins = flask.request.args.get('takes_private_ins', type=bool)
+    takes_ohp = flask.request.args.get('takes_OHP', type=bool)
     office_name = flask.request.args.get('office_name')
     address = flask.request.args.get('address')
 
@@ -107,9 +214,12 @@ def create():
     collection.insert(new)
 
     # Return to the resources:
-    filter_ohp, filter_monitor_hormones, filter_pvt_ins = False, False, False
     # resource_type = flask.request.args.get('resource_type')
+    # filter_ohp = flask.request.args.get('filter_ohp', type=bool)
+    # filter_monitor_hormones = flask.request.args.get('filter_monitor_hormones', type=bool)
+    # filter_pvt_ins = flask.request.args.get('filter_pvt_ins', type=bool)
     # app.logger.debug("Pulling resources of type: " + resource_type)
+    filter_ohp, filter_monitor_hormones, filter_pvt_ins = False, False, False
     resource_type = 0  #TODO temp
     result = {"resources": get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins)}
     return flask.jsonify(result=result)
@@ -125,9 +235,13 @@ def delete():
 
     # Return to the remaining resources:
 
-    filter_ohp, filter_monitor_hormones, filter_pvt_ins = False, False, False
     # resource_type = flask.request.args.get('resource_type')
     # app.logger.debug("Pulling resources of type: " + resource_type)
+    # filter_ohp = flask.request.args.get('filter_ohp', type=bool)
+    # filter_monitor_hormones = flask.request.args.get('filter_monitor_hormones', type=bool)
+    # filter_pvt_ins = flask.request.args.get('filter_pvt_ins', type=bool)
+
+    filter_ohp, filter_monitor_hormones, filter_pvt_ins = False, False, False
     resource_type = 0  #TODO temp
     result = {"resources": get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins)}
     return flask.jsonify(result=result)
@@ -222,7 +336,7 @@ def verify_resource(name):
     """
     # for record in collection.find({"name": name}):
     collection.update_one({"name": name},
-                          {"$set": {"verified": True }})
+                          {"$set": {"verified": True}})
 
 
 def test():

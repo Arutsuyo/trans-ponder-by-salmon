@@ -3,3 +3,4 @@ arrow
 gunicorn
 pymongo
 nose
+werkzeug
