@@ -1,189 +1,197 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<html> <head>
-<title>Resource Directory</title>
-  <!-- 'viewport' is used by bootstrap to respond to device size -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<html>
 
-  <!-- Javascript:  JQuery from a content distribution network (CDN) -->
-  <script
-     src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
-  </script>
+<head>
+    <title>Resource Directory</title>
+    <!-- 'viewport' is used by bootstrap to respond to device size -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Bootstrap includes javascript and css  (must follow jquery) -->
-  <link rel="stylesheet"
-   href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-   <script
-    src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
-</script>
+    <!-- Javascript:  JQuery from a content distribution network (CDN) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
+    </script>
 
-   <!-- Our own style sheet -->
-   <link rel="stylesheet" href="css/style.css" />
+    <!-- Bootstrap includes javascript and css  (must follow jquery) -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
+    </script>
 
+    <!-- Our own style sheet -->
+    <link rel="stylesheet" href="css/style.css" />
+    <script type="text/javascript">
+        var SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+          var CREATE_URL = SCRIPT_ROOT + "/_create";
+          var DEL_URL = SCRIPT_ROOT + "/_del";
+          var INIT_URL = SCRIPT_ROOT + "/_disp";
+
+          function load_memos() {
+            // A function to run on page load to update the page
+            // with memos already in the db.
+            console.log("Displaying Entries: ");
+            $.getJSON(INIT_URL, {}, function(data) {
+                 var memos = data.result;
+                 show_me_the_memos(memos)
+            });
+          }
+
+          function add_memo() {
+            // A function to add a memo with properties of the date
+            // area and contents textarea.
+            var date = document.getElementById('date').value;
+            var contents = document.getElementById('contents').value;
+            var err = document.getElementById('err');
+            $.getJSON(CREATE_URL, {date: date, contents: contents}, function(data){
+              var memos = data.result;
+              console.log(memos);
+              if (data.result.error) {
+                // If arrow can't figure out what the date input means:
+                console.log("Bad date!");
+                err.style.visibility='visible';
+              }
+              else {
+                // Show the memos with the new one included:
+                err.style.visibility='hidden';
+                // Clear the memo and date from the input field.
+                document.getElementById('date').value = '';
+                document.getElementById('contents').value = '';
+                show_me_the_memos(memos);
+              }
+            });
+          }
+
+          function del_memo(id) {
+            console.log("Deleting a memo.");
+            $.getJSON(DEL_URL, {id: id}, function(data){
+              var memos = data.result;
+              console.log(memos);
+              // Show the memos with the deleted one removed:
+              show_me_the_memos(memos)
+            });
+          }
+
+          function show_me_the_memos(mems){
+            var memos = mems.memos;
+            var table = document.getElementById('memo_table');
+            // First, clear the old memo table. Uses some code from:
+            // https://stackoverflow.com/questions/3955229/remove-all-child-elements-of-a-dom-node-in-javascript
+            while (table.firstChild) {
+                table.removeChild(table.firstChild);
+            }
+            var memo_table = document.createElement('tbody');
+            table.appendChild(memo_table);
+
+            // Add the current memos to the table
+            console.log("Showing " + memos.length + " memos.");
+            for (var i = 0; i < memos.length; i++) {
+              console.log(memos[i]);
+              // First a row with the date:
+              memo_table.insertRow().outerHTML = "<tr>" + memos[i].disp_date + ": </tr>";
+              // Next a textarea with the memo and a delete button next to it
+              memo_table.insertRow().outerHTML = "<tr class='the_row'> <td> <textarea readonly name='memo' rows='4' cols='30'>"
+                  + memos[i].text
+                  + "</textarea> </td> <td> <input name='remove' id='remove' type='submit' value='Delete'/> </td> </tr>";
+              // Next an empty row for clarity.
+              memo_table.insertRow().outerHTML = "<tr ><br/></tr>";
+              // Index to the delete button that was just created:
+              var memo_row = memo_table.rows[3*i + 1].childNodes;
+              var del_btn = $(memo_row[3]).parents(".the_row").find("input[name='remove']");
+              // Add a listener for that button
+              var btn_id = memos[i].index;
+              make_listener(del_btn, btn_id)
+            }
+          }
+
+
+          $(document).ready(function(){onPageLoad();});
+          function onPageLoad(){
+            // Display the memos already in the database.
+            load_memos()
+          }
+    </script>
 </head>
+
 <body>
-<div class="sorting_options">
-<!-- W3 SChools -->
-  <div class="dropdown">
-   <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Service Type
-   <span class="caret"></span></button>
-   <ul class="dropdown-menu">
-     <li><a href="#">Chiropractor</a></li>
-     <li><a href="#">Psychologist</a></li>
-     <li><a href="#">Endocrinologist</a></li>
-     <li><a href="#">Gynecologist</a></li>
-     <li><a href="#">Social Support</a></li>
-     <li><a href="#">Laser / Electrolysis</a></li>
-     <li><a href="#">Surgeon</a></li>
-     <li><a href="#">Surgery Scholarship</a></li>
-     <li><a href="#">Therapist / Counselor</a></li>
-     <li><a href="#">Voice Therapy</a></li>
-     <li><a href="#">Youth Support</a></li>
-     <li><a href="#">Hair</a></li>
-     <li><a href="#">Gender Affirming Products</a></li>
-   </ul>
-  </div>
-
-  <div class="form-check form-check-inline">
-    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-    <label class="form-check-label" for="inlineCheckbox1">Takes Oregon Health Plan</label>
-  </div>
-  <div class="form-check form-check-inline">
-    <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
-    <label class="form-check-label" for="inlineCheckbox2">Takes Private Insurance</label>
-  </div>
-  <div class="form-check form-check-inline">
-    <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="option3" >
-    <label class="form-check-label" for="inlineCheckbox3">Can Monitor Hormones</label>
-  </div>
-
-</div>
-
-<div class="container">
-
-<h2>Current Resources: </h2>
-<!-- Table to be filled in by js functions -->
-<table class="resource_table" id="resource_table">
-    <tbody>
-      <div class = "resource">
-        <!-- <div class = "r_img_div"> <img src = "baa3.png" class = "r_image" width = "150" height = "150" > </div> -->
-        <div r_head>
-          <div class = "r_titleDiv"><h3 class = "r_title">PLACEHOLDER TITLE</h3></div>
-          <h4 class = "r_category">Category</h4>
-        </br>
-          <div class = "r_providerName">ProviderName</div>
+    <img class="tplogo" src="img/tplogo.png" height="90px" width="90px">
+    <div class="sorting_options">
+        <!-- W3 SChools -->
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Service Type
+     <span class="caret"></span></button>
+            <ul class="dropdown-menu">
+                <li><a href="#">Chiropractor</a></li>
+                <li><a href="#">Psychologist</a></li>
+                <li><a href="#">Endocrinologist</a></li>
+                <li><a href="#">Gynecologist</a></li>
+                <li><a href="#">Social Support</a></li>
+                <li><a href="#">Laser / Electrolysis</a></li>
+                <li><a href="#">Surgeon</a></li>
+                <li><a href="#">Surgery Scholarship</a></li>
+                <li><a href="#">Therapist / Counselor</a></li>
+                <li><a href="#">Voice Therapy</a></li>
+                <li><a href="#">Youth Support</a></li>
+                <li><a href="#">Hair</a></li>
+                <li><a href="#">Gender Affirming Products</a></li>
+            </ul>
         </div>
-        <ul class = "r_contactInfo">
-          <li><b>Website:</b> <span class = "r_contact r_url">N/A</span></li>
-          <li><b>Email:</b> <span class = "r_contact r_email">N/A</span></li>
-          <li><b>Phone #:</b> <span class = "r_contact r_phone">N/A</span></li>
-          <li><b>Address:</b> <span class = "r_contact r_address">N/A</span></li>
-          <li><b>Office:</b> <span class = "r_contact r_officeName">N/A</span></li>
-        </ul>
 
-        <ul class = "r_perks">
-          <li class = "r_takesOHP">N</li>
-          <li class = "r_takesInsurance">N</li>
-          <li class = "r_takesInsurance">N</li>
-          <li class = "r_takesInsurance">N</li>
-          <li class = "r_takesInsurance">N</li>
-      </ul></div>
-    </tbody>
-</table>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="box_OHP" value="option1">
+            <label class="form-check-label" for="inlineCheckbox1">Takes Oregon Health Plan</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="box_PI" value="option2">
+            <label class="form-check-label" for="inlineCheckbox2">Takes Private Insurance</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="box_MH" value="option3">
+            <label class="form-check-label" for="inlineCheckbox3">Can Monitor Hormones</label>
+        </div>
 
-<br />  <br />  <br />
+    </div>
+    <div class="container">
 
+        <h2>Current Resources: </h2>
+        <!-- Table to be filled in by js functions -->
+        <table class="resource_table" id="resource_table">
+            <tbody>
+                <div class="resource">
+                    <!-- <div class = "r_img_div"> <img src = "baa3.png" class = "r_image" width = "150" height = "150" > </div> -->
+                    <div r_head>
+                        <div class="r_titleDiv">
+                            <h3 class="r_title">PLACEHOLDER TITLE</h3>
+                        </div>
+                        <h4 class="r_category">Category</h4>
+                        </br>
+                        <div class="r_providerName">ProviderName</div>
+                    </div>
+                    <ul class="r_contactInfo">
+                        <li><b>Website:</b> <span class="r_contact r_url">N/A</span></li>
+                        <li><b>Email:</b> <span class="r_contact r_email">N/A</span></li>
+                        <li><b>Phone #:</b> <span class="r_contact r_phone">N/A</span></li>
+                        <li><b>Address:</b> <span class="r_contact r_address">N/A</span></li>
+                        <li><b>Office:</b> <span class="r_contact r_officeName">N/A</span></li>
+                    </ul>
 
-<script type="text/javascript">
-
-  var SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-  var CREATE_URL = SCRIPT_ROOT + "/_create";
-  var DEL_URL = SCRIPT_ROOT + "/_del";
-  var INIT_URL = SCRIPT_ROOT + "/_disp";
-
-  function load_memos() {
-    // A function to run on page load to update the page
-    // with memos already in the db.
-    console.log("Displaying Entries: ");
-    $.getJSON(INIT_URL, {}, function(data) {
-         var memos = data.result;
-         show_me_the_memos(memos)
-    });
-  }
-
-  function add_memo() {
-    // A function to add a memo with properties of the date
-    // area and contents textarea.
-    var date = document.getElementById('date').value;
-    var contents = document.getElementById('contents').value;
-    var err = document.getElementById('err');
-    $.getJSON(CREATE_URL, {date: date, contents: contents}, function(data){
-      var memos = data.result;
-      console.log(memos);
-      if (data.result.error) {
-        // If arrow can't figure out what the date input means:
-        console.log("Bad date!");
-        err.style.visibility='visible';
-      }
-      else {
-        // Show the memos with the new one included:
-        err.style.visibility='hidden';
-        // Clear the memo and date from the input field.
-        document.getElementById('date').value = '';
-        document.getElementById('contents').value = '';
-        show_me_the_memos(memos);
-      }
-    });
-  }
-
-  function del_memo(id) {
-    console.log("Deleting a memo.");
-    $.getJSON(DEL_URL, {id: id}, function(data){
-      var memos = data.result;
-      console.log(memos);
-      // Show the memos with the deleted one removed:
-      show_me_the_memos(memos)
-    });
-  }
-
-  function show_me_the_memos(mems){
-    var memos = mems.memos;
-    var table = document.getElementById('memo_table');
-    // First, clear the old memo table. Uses some code from:
-    // https://stackoverflow.com/questions/3955229/remove-all-child-elements-of-a-dom-node-in-javascript
-    while (table.firstChild) {
-        table.removeChild(table.firstChild);
-    }
-    var memo_table = document.createElement('tbody');
-    table.appendChild(memo_table);
-
-    // Add the current memos to the table
-    console.log("Showing " + memos.length + " memos.");
-    for (var i = 0; i < memos.length; i++) {
-      console.log(memos[i]);
-      // First a row with the date:
-      memo_table.insertRow().outerHTML = "<tr>" + memos[i].disp_date + ": </tr>";
-      // Next a textarea with the memo and a delete button next to it
-      memo_table.insertRow().outerHTML = "<tr class='the_row'> <td> <textarea readonly name='memo' rows='4' cols='30'>"
-          + memos[i].text
-          + "</textarea> </td> <td> <input name='remove' id='remove' type='submit' value='Delete'/> </td> </tr>";
-      // Next an empty row for clarity.
-      memo_table.insertRow().outerHTML = "<tr ><br/></tr>";
-      // Index to the delete button that was just created:
-      var memo_row = memo_table.rows[3*i + 1].childNodes;
-      var del_btn = $(memo_row[3]).parents(".the_row").find("input[name='remove']");
-      // Add a listener for that button
-      var btn_id = memos[i].index;
-      make_listener(del_btn, btn_id)
-    }
-  }
-
-
-  $(document).ready(function(){onPageLoad();});
-  function onPageLoad(){
-    // Display the memos already in the database.
-    load_memos()
-  }
-</script>
-</div>
+                    <ul class="r_perks">
+                        <li class="r_takesOHP">N</li>
+                        <li class="r_takesInsurance">N</li>
+                        <li class="r_takesInsurance">N</li>
+                        <li class="r_takesInsurance">N</li>
+                        <li class="r_takesInsurance">N</li>
+                    </ul>
+                </div>
+            </tbody>
+        </table>
+        <br /> <br /> <br />
+        <br /> <br /> <br />
+        <br /> <br /> <br />
+        <br /> <br /> <br />
+        <br /> <br /> <br />
+        <br /> <br /> <br />
+        <br /> <br /> <br />
+        <br /> <br /> <br />
+    </div>
+    <div class = "contact"></div>
+    <div class = "footer"></div>
 </body>
+
 </html>
