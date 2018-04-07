@@ -1,23 +1,21 @@
 """
-Author: Team Salmon
+Author: Team Salmon: Sam Champer, Nara Emery, Andrea Nosler
 Flask web app connecting trans*ponder database and website.
 The flask web server connects with a mongo database,
 where user submitted resources are stored and can be
 verified by users with appropriate privileges.
 """
 
-import flask
-from flask import request
-from flask import url_for
-
-import logging
 import sys
-import arrow
+import logging
+import flask  # Web server tool.
+import arrow  # For times and times.
+from pymongo import MongoClient  # Mongo database
+import config  # Get config settings from credentials file
 
-# Mongo database
-from pymongo import MongoClient
-
-import config
+####
+# App globals.
+###
 CONFIG = config.configuration()
 
 MONGO_CLIENT_URL = "mongodb://{}:{}@{}:{}/{}".format(
@@ -40,14 +38,16 @@ app.secret_key = CONFIG.SECRET_KEY
 try:
     dbclient = MongoClient(MONGO_CLIENT_URL)
     db = getattr(dbclient, str(CONFIG.DB))
-    collection = db.memos
+    collection = db.resources
 except:
     print("Failure opening database. Is Mongo running? Correct password?")
     sys.exit(1)
 
+
 ###
 # Pages
 ###
+# Main index page
 @app.route("/")
 @app.route("/index")
 def index():
@@ -55,51 +55,95 @@ def index():
     return flask.render_template('index.html')
 
 
-# A function to display memos on page load
+# A function to display resources to the front end from the db.
 @app.route("/_disp")
 def disp():
-    app.logger.debug("Initializing memos.")
-    result = {"memos": get_memos()}
+    # resource_type = flask.request.args.get('resource_type')
+    # app.logger.debug("Pulling resources of type: " + resource_type)
+    resource_type = 0 #temp
+    result = {"resources": get_db_entries(resource_type)}
     return flask.jsonify(result=result)
 
 
-# Create a new memo
+# Function to add a new resource to the db:
 @app.route("/_create")
 def create():
-    app.logger.debug("Creating memo")
-    # Get the memo contents from javascript side.
-    contents = request.args.get('contents')
-    date = request.args.get('date')
-    # Find a new index for the next memo:
-    cur_index = memo_idx()
-    try:
-        # Try block is for checking if date is valid.
-        valid = arrow.get(date, 'YYYY-M-D')
-    except:
-        er = "Not a good time"
-        app.logger.debug(er)
-        result = {"error": er}
-        return flask.jsonify(result=result)
+    app.logger.debug("Uploading new resource to db.")
+    # Get resource contents from user.
+    website = flask.request.args.get('website')
+    paperwork_not_only_mf = flask.request.args.get('paperwork_not_only_mf')
+    paperwork_asks_for_pronoun = flask.request.args.get('paperwork_asks_for_pronoun')
+    notes = flask.request.args.get('notes')
+    can_monitor_hormones = flask.request.args.get('can_monitor_hormones')
+    sliding_scale = flask.request.args.get('sliding_scale')
+    name = flask.request.args.get('name')
+    email = flask.request.args.get('email')
+    phone = flask.request.args.get('phone')
+    type = flask.request.args.get('type')
+    diversity_aware = flask.request.args.get('diversity_aware')
+    takes_private_ins = flask.request.args.get('takes_private_ins')
+    takes_OHP = flask.request.args.get('takes_OHP')
+    office_name = flask.request.args.get('office_name')
+    address = flask.request.args.get('address')
 
-    new = {"type": "dated_memo",
-           "date": date,
-           "text": contents,
-           "index": cur_index}
+    # Add a new entry to the database with the contents submitted by the user.
+    new = {"website": website,
+           "paperwork_not_only_mf": paperwork_not_only_mf,
+           "paperwork_asks_for_pronoun": paperwork_asks_for_pronoun,
+           "notes": notes,
+           "can_monitor_hormones": can_monitor_hormones,
+           "sliding_scale": sliding_scale,
+           "name": name,
+           "email": email,
+           "phone": phone,
+           "type": type,
+           "diversity_aware": diversity_aware,
+           "takes_private_ins": takes_private_ins,
+           "takes_OHP": takes_OHP,
+           "office_name": office_name,
+           "address": address,
+           "verified": False}
     collection.insert(new)
-    result = {"memos": get_memos()}
+
+    # Return to the resources:
+    # resource_type = flask.request.args.get('resource_type')
+    # app.logger.debug("Pulling resources of type: " + resource_type)
+    resource_type = 0 #temp
+    result = {"resources": get_db_entries(resource_type)}
     return flask.jsonify(result=result)
 
 
-# Delete a memo
+# Delete a resource
 @app.route("/_del")
 def delete():
-    # Get the index for the memo to delete from js:
-    id = request.args.get('id', type=int)
-    app.logger.debug("Deleting memo")
-    # Delete the memo:
-    del_memo(id)
-    # Send the remaining memos over to js:
-    result = {"memos": get_memos()}
+    # Get the name of the resource to delete from user:
+    name = flask.request.args.get('name')
+    app.logger.debug("Deleting resource")
+    del_resource(name)
+    # Return to the remaining resources:
+    # resource_type = flask.request.args.get('resource_type')
+    # app.logger.debug("Pulling resources of type: " + resource_type)
+    resource_type = 0 #temp
+    result = {"resources": get_db_entries(resource_type)}
+    return flask.jsonify(result=result)
+
+
+# Get unverified resources
+@app.route("/_unverified")
+def unverified():
+    result = {"resources": get_unverified()}
+    return flask.jsonify(result=result)
+
+
+# verify a resource
+@app.route("/_verify")
+def verify():
+    # Get the name of the resource to delete from user:
+    name = flask.request.args.get('name')
+    app.logger.debug("verifying resource")
+    verify_resource(name)
+    # Return to the remaining unverified resources:
+    result = {"resources": get_unverified()}
     return flask.jsonify(result=result)
 
 
@@ -107,79 +151,55 @@ def delete():
 def page_not_found(error):
     app.logger.debug("Page not found")
     return flask.render_template('page_not_found.html',
-                                 badurl=request.base_url,
-                                 linkback=url_for("index")), 404
+                                 badurl=flask.request.base_url,
+                                 linkback=flask.url_for("index")), 404
 
 
 ##############
 # Functions available to the page code above
 ##############
-def humanize_arrow_date(date):
+def get_db_entries(resource_type):
     """
-    Date is internal UTC ISO format string.
-    Output should be "today", "yesterday", "in 5 days", etc.
-    Arrow will try to humanize down to the minute, so we
-    need to catch 'today' as a special case.
-    """
-    try:
-        then = arrow.get(date, 'YYYY-M-D').to('local')
-        # If we are in a tz less than Greenwhich (West), then the memos are getting a date
-        # that is one day too soon, so shift forward a day if we are in such a time zone.
-        # the [-6]th element of the arrow time string is the sign on the timezone segment of the time.
-        # Thus, if it is "-", we need to shift forward one day.
-        East_of_Greenwhich = arrow.now().isoformat()[-6]
-        if East_of_Greenwhich == "-":
-            then = then.shift(days=+1)
-        now = arrow.utcnow().to('local')
-
-        # Some special cases for the humanize functions: today, tomorrow, yesterday.
-        if then.date() == now.date():
-            human = "Today"
-        elif str(then.date() - now.date()) == "1 day, 0:00:00":
-            human = "Tomorrow"
-        elif str(now.date() - then.date()) == "1 day, 0:00:00":
-            human = "Yesterday"
-        else:
-            human = then.humanize()
-    except:
-        human = date
-    return human
-
-
-def get_memos():
-    """
-    Returns all memos in the database, in a form that
+    Returns all matching resources, in a form that
     can be inserted directly in the 'session' object,
-    and in sorted order.
+    in sorted order.
     """
     records = []
-    for record in collection.find({"type": "dated_memo"}):
-        record['a_date'] = arrow.get(record['date'], 'YYYY-M-D').isoformat()
+    for record in collection.find({"type": resource_type}):
         del record['_id']
-        record['disp_date'] = humanize_arrow_date(record.get('date'))
-        records.append(record)
+        if record[verified] is True:
+            records.append(record)
     # Sort the records by arrow date:
-    records.sort(key=lambda i: arrow.get(i['a_date']))
+    records.sort(key=lambda i: i['name'])
     return records
 
 
-def memo_idx():
-    # The easiest way to delete memos is if each has
-    # an index that is unique for each memo.
-    # This might be slow for a very large database?
-    new_index = 0
-    for record in collection.find():
-        if record["index"] > new_index:
-            new_index = record["index"]
-    new_index += 1
-    return new_index
+def get_unverified():
+    """
+    Returns all unverified resources.
+    """
+    records = []
+    for record in collection.find({"verified": False}):
+        del record['_id']
+        records.append(record)
+    # Sort the records by arrow date:
+    records.sort(key=lambda i: i['name'])
+    return records
 
 
-def del_memo(idx):
+def del_resource(name):
     """
-    Deletes a memo with a specified index from the database.
+    Deletes a resource with a specified name from the database.
     """
-    for record in collection.find({"index": idx}):
+    for record in collection.find({"name": name}):
+        collection.delete_one(record)
+
+
+def verify_resource(name):
+    """
+    Marks a resource as verified.
+    """
+    for record in collection.find({"name": name}):
         collection.delete_one(record)
 
 
@@ -187,4 +207,3 @@ if __name__ == "__main__":
     app.debug = CONFIG.DEBUG
     app.logger.setLevel(logging.DEBUG)
     app.run(port=CONFIG.PORT, host="localhost")
-    

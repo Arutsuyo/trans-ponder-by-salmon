@@ -26,6 +26,10 @@ source/credentials.ini:
 run:	env credentials
 	$(INVENV) cd source; python3 flask_main.py
 
+
+test:	env
+	$(INVENV) cd meetings; nosetests
+
 ##
 ## Preserve virtual environment for git repository
 ## to duplicate it on other targets
