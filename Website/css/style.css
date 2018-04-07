@@ -1,0 +1,117 @@
+body{
+  background-color: white;
+  padding-bottom: 230px;
+}
+#tplogo{
+  display: inline-block;
+  background-color: white;
+  float:left;
+  float:top;
+  position:fixed;
+  margin: 20px;
+  border-radius: 50px;
+  margin-left: 30px;
+  z-index: 10;
+}
+.dropdown-menu{
+  margin-left: 150px;
+}
+.container{
+  width:auto;
+  background-color: #f9f6e3;
+  margin-left: 150px;
+  margin-right: 28%;
+  margin-bottom: 30px;
+}
+#sorting_options{
+  float:top;
+  position:fixed;
+  background-color: white;
+  display: inline-block;
+  width: 100%;
+  padding:10px;
+  height: 55px;
+  padding-left: 200px;
+}
+#dropdown{
+  margin-bottom: 5px;
+  display: inline-block;
+  margin-right: 20px;
+}
+.resource{
+  background-color: #EEEEEE;
+  border-radius: 10px;
+  padding: 5px;
+}
+#r_head{
+  display: inline-block;
+  background-color: #00FF66;
+  margin: 10px;
+}
+#r_img_div{
+  display: inline-block;
+  margin: 5px;
+  float:left;
+  border-radius: 10px;
+}
+#r_image{
+  border-radius: 10px;
+}
+#r_category{
+  display: inline-block;
+  float:right;
+  margin-right: 10px;
+}
+#r_titleDiv{
+  display: inline-block;
+  margin-left: 10px;
+}
+#r_providerName{
+  display: inline-block;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+#r_contactInfo{
+  list-style: none;
+  margin-left: 30px;
+  display: inline-block;
+}
+#r_perks{
+  float: right;
+  margin-right: 30px;
+  list-style: none;
+  display: inline-block;
+  margin-right: 10px;
+}
+#r_contact{
+  margin-left: 10px;
+  margin-right: 10px;
+  display: inline-block;
+}
+
+#r_img_div{
+   max-width: 100%;
+   height: auto;
+}
+.form-check-inline{
+  display: inline-block;
+  margin-left: 30px;
+}
+#contact{
+  background-color: #313b48;
+  height: 170px;
+  width: 100%;
+}
+#bottom-bar{
+  background-color: #28313d;
+  height: 60px;
+  width: 100%;
+}
+footer{
+  bottom:0;
+  height:230px;
+  position: absolute;
+  width: 100%;
+}
