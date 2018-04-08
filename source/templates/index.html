@@ -138,7 +138,7 @@
         // Add the current resources to the table
         for (var i = 0; i < resources.length; i++) {
             // Put the resource in the table:
-            resource_table.insertRow().outerHTML
+            resource_table.insertRow().outerHTML=
               "<div class='uv-resource resource'>" +
                 "<div id = 'r_head'>" +
                     "<div id='r_titleDiv'>" +
@@ -163,9 +163,9 @@
                     "</ul>" +
                 "</div>" +
             "</div>"+
-                     "<tr><input name='remove' id='remove_" + i + "' type='submit' value='Delete'/></tr>" +
-                     "<tr><input name='verify' id='verify_"+ i + "' type='submit' value='Verify'/></tr>" +
-                     "<tr> <br /><br /><br /></tr>"
+                     "</br> <input class='btn btn-success btn-xs' name='remove' id='remove_" + i + "' type='submit' value='Delete'/>" +
+                     "</br> <input class='btn btn-danger btn-xs' name='verify' id='verify_"+ i + "' type='submit' value='Verify'/>" +
+                     "<tr> <br /></tr>"
 
             var remove_id = "#remove_" + i;
             var verify_id = "#verify_" + i;
