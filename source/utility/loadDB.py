@@ -56,6 +56,14 @@ except:
 def create(line):
     print(len(info))
     print(info)
+    
+    checklist = [7,8,11,12,13]
+    for i in checklist:
+    	if info[i] == "Yes" or info[i] == "yes" or info[i] == "HRT":
+    	    info[i] = True
+    	if info[i] == "No" or info[i] == "no":
+    	    info[i] = False
+    
     new = {"type": info[0],
            "name": info[1],
            "office_name": info[2],
