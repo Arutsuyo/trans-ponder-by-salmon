@@ -98,6 +98,7 @@
 
             // Put the resource in the table:
             resource_table.insertRow().outerHTML =
+
                 "<tr>" + resources[i].name + ", " + resources[i].type + "</tr>" +
                 "<tr> Website: " + resources[i].website + "</tr>" +
                 "<tr> Paperwork for this provider allows choices beyond just m/f: "  + resources[i].paperwork_not_only_mf + "</tr>" +
@@ -113,7 +114,6 @@
                 "<tr> Office name, if applicable: " + resources[i].office_name + "</tr>" +
                 "<tr> Provider address: " + resources[i].address + "</tr>" +
                     "<tr> <br /><br /><br /></tr>"
-
         }
     }
 
@@ -214,7 +214,6 @@
                         <li><b>Address:</b> <span id="r_address">N/A</span></li>
                         <li><b>Office:</b> <span id="r_officeName">N/A</span></li>
                     </ul>
-
                     <ul id="r_perks">
                         <li id="r_takesOHP">N</li>
                         <li id="r_takesInsurance">N</li>
