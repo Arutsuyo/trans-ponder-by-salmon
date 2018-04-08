@@ -63,10 +63,12 @@
     			var res = data.result;
     			console.log(res);
     			if (res.error) {
-    				console.log(res.error);
+					console.log(res.error);
+					alert(res.error);
     			}
     			else {
-    				console.log("Resource added successfully");
+					console.log("Resource added successfully");
+					alert("Resource added successfully");
     			}
     	});
     }
