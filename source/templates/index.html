@@ -100,25 +100,25 @@
                     "<div id='r_titleDiv'>" +
                         "<h4 id='r_title'>" + resources[i].name +"</h4>" +
                     "</div>" +
-                    "</br>" +
+                    "<br/>" +
                     "<div id='r_providerName'>" + resources[i].website + "</div>"+
                     "<ul id='r_contactInfo'>" +
-                        "<li><b>Website:</b> <span id='r_url'></br>" + resources[i].website +"</span></li></br>" +
-                        "<li><b>Email:</b> <span id='r_email'></br>" + resources[i].email +"</span></li></br>" +
-                        "<li><b>Phone #:</b> <span id='r_phone'></br>"+ resources[i].phone +"</span></li></br>" +
-                        "<li><b>Address:</b> <span id='r_address'></br>" + resources[i].address + "</span></li></br>" +
-                        "<li><b>Office:</b> <span id='r_officeName'></br>" + resources[i].office_name +"</span></li>" +
+                        "<li><b>Website:</b> <span id='r_url'><br/>" + resources[i].website +"</span></li><br/>" +
+                        "<li><b>Email:</b> <span id='r_email'><br/>" + resources[i].email +"</span></li><br/>" +
+                        "<li><b>Phone #:</b> <span id='r_phone'><br/>"+ resources[i].phone +"</span></li><br/>" +
+                        "<li><b>Address:</b> <span id='r_address'><br/>" + resources[i].address + "</span></li><br/>" +
+                        "<li><b>Office:</b> <span id='r_officeName'><br/>" + resources[i].office_name +"</span></li>" +
                     "</ul>" +
-                    "</br><div class = 'text-muted' id = 'r_perks'>" +
-                      "</br> Provider is diversity aware: " + resources[i].diversity_aware +
-                      "</br> Provider takes private insurance: " + resources[i].takes_private_ins  +
-                      "</br> Provider takes OHP: " + resources[i].takes_OHP +
-                      "</br> Office name: " + resources[i].office_name +
+                    "<br/><div class = 'text-muted' id = 'r_perks'>" +
+                      "<br/> Provider is diversity aware: " + resources[i].diversity_aware +
+                      "<br/> Provider takes private insurance: " + resources[i].takes_private_ins  +
+                      "<br/> Provider takes OHP: " + resources[i].takes_OHP +
+                      "<br/> Office name: " + resources[i].office_name +
                       "</div>"+
                 "</div>" +
             "</div>";
 
-            resource_table.insertRow().outerHTML = "</br>";
+            resource_table.insertRow().outerHTML = "<br/>";
         }
     }
 
@@ -144,28 +144,28 @@
                     "<div id='r_titleDiv'>" +
                         "<h3 id='r_title'>" + resources[i].name +"</h3>" +
                     "</div>" +
-                    "</br>" +
+                    "<br/>" +
                     "<div id='r_providerName'>" + resources[i].website + "</div>"+
                     "<ul id='r_contactInfo'>" +
-                        "<li><b>Website:</b> <span id='r_url'></br>" + resources[i].website +"</span></li></br>" +
-                        "<li><b>Email:</b> <span id='r_email'></br>" + resources[i].email +"</span></li></br>" +
-                        "<li><b>Phone #:</b> <span id='r_phone'></br>"+ resources[i].phone +"</span></li></br>" +
-                        "<li><b>Address:</b> <span id='r_address'></br>" + resources[i].address + "</span></li></br>" +
-                        "<li><b>Office:</b> <span id='r_officeName'></br>" + resources[i].office_name +"</span></li>" +
+                        "<li><b>Website:</b> <span id='r_url'><br/>" + resources[i].website +"</span></li><br/>" +
+                        "<li><b>Email:</b> <span id='r_email'><br/>" + resources[i].email +"</span></li><br/>" +
+                        "<li><b>Phone #:</b> <span id='r_phone'><br/>"+ resources[i].phone +"</span></li><br/>" +
+                        "<li><b>Address:</b> <span id='r_address'><br/>" + resources[i].address + "</span></li><br/>" +
+                        "<li><b>Office:</b> <span id='r_officeName'><br/>" + resources[i].office_name +"</span></li>" +
                         "<li>" +
-                          "</br><div class = 'text-muted' id = 'r_perks'>" +
-                            "</br> Provider is diversity aware: " + resources[i].diversity_aware +
-                            "</br> Provider takes private insurance: " + resources[i].takes_private_ins  +
-                            "</br> Provider takes OHP: " + resources[i].takes_OHP +
-                            "</br> Office name: " + resources[i].office_name +
+                          "<br/><div class = 'text-muted' id = 'r_perks'>" +
+                            "<br/> Provider is diversity aware: " + resources[i].diversity_aware +
+                            "<br/> Provider takes private insurance: " + resources[i].takes_private_ins  +
+                            "<br/> Provider takes OHP: " + resources[i].takes_OHP +
+                            "<br/> Office name: " + resources[i].office_name +
                             "</div>"+
                         "</li>"+
                     "</ul>" +
                 "</div>" +
             "</div>"+
-                     "<tr><input name='remove' id='remove_" + i + "' type='submit' value='Delete'/></tr>" +
-                     "<tr><input name='verify' id='verify_"+ i + "' type='submit' value='Verify'/></tr>" +
-                     "<tr> <br /><br /><br /></tr>"
+                     "<br/> <input class='btn btn-success btn-xs' name='remove' id='remove_" + i + "' type='submit' value='Delete'/>" +
+                     "<br/> <input class='btn btn-danger btn-xs' name='verify' id='verify_"+ i + "' type='submit' value='Verify'/>" +
+                     "<tr> <br /></tr>"
 
             var remove_id = "#remove_" + i;
             var verify_id = "#verify_" + i;
