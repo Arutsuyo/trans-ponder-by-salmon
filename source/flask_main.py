@@ -220,7 +220,6 @@ def disp():
     else:
         return flask.jsonify(dict())
 
-
 # Function to add a new resource to the db:
 @app.route("/_create")
 def create():
@@ -233,15 +232,14 @@ def create():
     phone = flask.request.args.get('phone')
     email = flask.request.args.get('email')
     website = flask.request.args.get('website')
-    takes_ohp = flask.request.args.get('takes_OHP', type=bool)
-    takes_private_ins = flask.request.args.get('takes_private_ins', type=bool)
-    sliding_scale = flask.request.args.get('sliding_scale')
-    diversity_aware = flask.request.args.get('diversity_aware')
-    paperwork_not_only_mf = flask.request.args.get('paperwork_not_only_mf', type=bool)
-    paperwork_asks_for_pronoun = flask.request.args.get('paperwork_asks_for_pronoun', type=bool)
-    can_monitor_hormones = flask.request.args.get('can_monitor_hormones', type=bool)
+    takes_ohp = interp_bool(flask.request.args.get('takes_OHP'))
+    takes_private_ins = interp_bool(flask.request.args.get('takes_private_ins'))
+    sliding_scale = interp_bool(flask.request.args.get('sliding_scale'))
+    diversity_aware = interp_bool(flask.request.args.get('diversity_aware'))
+    paperwork_not_only_mf = interp_bool(flask.request.args.get('paperwork_not_only_mf'))
+    paperwork_asks_for_pronoun = interp_bool(flask.request.args.get('paperwork_asks_for_pronoun'))
+    can_monitor_hormones = interp_bool(flask.request.args.get('can_monitor_hormones'))
     notes = flask.request.args.get('notes')
-
     # Add a new entry to the database with the contents submitted by the user.
     new = {
         "type": type,
@@ -435,6 +433,14 @@ def verify_resource(name):
     # for record in collection.find({"name": name}):
     collection.update_one({"name": name},
                           {"$set": {"verified": True}})
+
+    
+def interp_bool(boolesque_string):
+    if boolesque_string == "yes":
+        return True
+    if boolesque_string == "N/A":
+        return boolesque_string
+    return False
 
 
 if __name__ == "__main__":
