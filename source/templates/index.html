@@ -1,4 +1,3 @@
-﻿
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 
@@ -21,243 +20,221 @@
     <!-- Our own style sheet -->
     <link rel="stylesheet" href="static/css/style.css" />
     <script type="text/javascript">
-    var SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-    var CREATE_URL = SCRIPT_ROOT + "/_create";
-    var DEL_URL = SCRIPT_ROOT + "/_del";
-    var DISP_URL = SCRIPT_ROOT + "/_disp";
-    var UNVERIFIED_URL = SCRIPT_ROOT + "/_unverified";
+        var SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+        var CREATE_URL = SCRIPT_ROOT + "/_create";
+        var DEL_URL = SCRIPT_ROOT + "/_del";
+        var DISP_URL = SCRIPT_ROOT + "/_disp";
+        var UNVERIFIED_URL = SCRIPT_ROOT + "/_unverified";
 
-    function load_resources() {
-        var filter_ohp = "False";
-        var filter_pvt_ins = "False";
-        var filter_monitor_hormones = "False";
-        // A function to get resources from the db.
-        var res_type = document.getElementById('res_type').value;
-        if (res_type == "Unverified Resources"){
-            return load_unverified_resources()
-        }
-        var ohp_box = document.getElementById('ohp_box');
-        var pvt_ins_box = document.getElementById('pvt_ins_box');
-        var monitor_hormones_box = document.getElementById('monitor_hormones_box');
-        if (ohp_box.checked){
-            filter_ohp = "True";
-        }
-        if (pvt_ins_box.checked){
-            filter_pvt_ins = "True";
-        }
-        if (monitor_hormones_box.checked){
-            filter_monitor_hormones = "True";
-        }
-        console.log("Pulling resources of type: ", res_type);
-        $.getJSON(DISP_URL, {res_type: res_type, filter_ohp: filter_ohp,
-                            filter_pvt_ins: filter_pvt_ins,
-                            filter_monitor_hormones: filter_monitor_hormones},
-                            function(data) {
-            var retval = data.result;
-            if (retval){var resources = retval.resources}
-            if (resources) {
-                console.log("Found ", resources.length, " resources.");
-                show_me_the_resources(resources)
+        function load_resources() {
+            var filter_ohp = "False";
+            var filter_pvt_ins = "False";
+            var filter_monitor_hormones = "False";
+            // A function to get resources from the db.
+            var res_type = document.getElementById('res_type').value;
+            if (res_type == "Unverified Resources"){
+                return load_unverified_resources()
             }
-        });
-    }
-
-    function load_unverified_resources(){
-        console.log("Pulling unverified resources");
-        $.getJSON(UNVERIFIED_URL, {}, function(data) {
-            var retval = data.result;
-            if (retval){
-                if (retval.err){
-                    disp_permission_error()
-                }
-            }else {
+            var ohp_box = document.getElementById('ohp_box');
+            var pvt_ins_box = document.getElementById('pvt_ins_box');
+            var monitor_hormones_box = document.getElementById('monitor_hormones_box');
+            if (ohp_box.checked){
+                filter_ohp = "True";
+            }
+            if (pvt_ins_box.checked){
+                filter_pvt_ins = "True";
+            }
+            if (monitor_hormones_box.checked){
+                filter_monitor_hormones = "True";
+            }
+            console.log("Pulling resources of type: ", res_type);
+            $.getJSON(DISP_URL, {res_type: res_type, filter_ohp: filter_ohp,
+                                filter_pvt_ins: filter_pvt_ins,
+                                filter_monitor_hormones: filter_monitor_hormones},
+                                function(data) {
+                var retval = data.result;
                 if (retval){var resources = retval.resources}
                 if (resources) {
                     console.log("Found ", resources.length, " resources.");
                     show_me_the_resources(resources)
                 }
+            });
+        }
+
+        function load_unverified_resources(){
+            console.log("Pulling unverified resources");
+            $.getJSON(UNVERIFIED_URL, {}, function(data) {
+                var retval = data.result;
+                if (retval){
+                    if (retval.err){
+                        disp_permission_error()
+                    }
+                }else {
+                    if (retval){var resources = retval.resources}
+                    if (resources) {
+                        console.log("Found ", resources.length, " resources.");
+                        show_me_the_resources(resources)
+                    }
+                }
+            });
+        }
+
+        function show_me_the_resources(recs){
+            var resources = recs;
+            var table = document.getElementById('resource_table');
+            // First, clear the old resource table. Uses some code from:
+            // https://stackoverflow.com/questions/3955229/remove-all-child-elements-of-a-dom-node-in-javascript
+            while (table.firstChild) {
+                table.removeChild(table.firstChild);
             }
-        });
-    }
 
-    function show_me_the_resources(recs){
-        var resources = recs;
-        var table = document.getElementById('resource_table');
-        // First, clear the old resource table. Uses some code from:
-        // https://stackoverflow.com/questions/3955229/remove-all-child-elements-of-a-dom-node-in-javascript
-        while (table.firstChild) {
-            table.removeChild(table.firstChild);
-        }
+            var resource_table = document.createElement('tbody');
+            table.appendChild(resource_table);
 
-        var resource_table = document.createElement('tbody');
-        table.appendChild(resource_table);
+            // Add the current resources to the table
+            for (var i = 0; i < resources.length; i++) {
+                console.log(resources[i]);
 
-        // Add the current resources to the table
-        for (var i = 0; i < resources.length; i++) {
-            console.log(resources[i]);
-
-            // Put the resource in the table:
-            resource_table.insertRow().outerHTML =
-              "<div class='resource'>" +
-                "<div id = 'r_head'>" +
-                    "<div id='r_titleDiv'>" +
-                        "<h4 id='r_title'>" + resources[i].name +"</h4>" +
+                // Put the resource in the table:
+                resource_table.insertRow().outerHTML =
+                  "<div class='resource'>" +
+                    "<div id = 'r_head'>" +
+                        "<div id='r_titleDiv'>" +
+                            "<h4 id='r_title'>" + resources[i].name +"</h4>" +
+                        "</div>" +
+                        "</br>" +
+                        "<div id='r_providerName'>" + resources[i].website + "</div>"+
                     "</div>" +
-                    "<h4 id='r_category'>"+ resources[i].type +"</h4>" +
-                    "</br>" +
-                    "<div id='r_providerName'>" + resources[i].website + "</div>"+
-                "</div>" +
-                "<ul id='r_contactInfo'>" +
-                    "<li><b>Website:</b> <span id='r_url'></br>" + resources[i].website +"</span></li></br>" +
-                    "<li><b>Email:</b> <span id='r_email'></br>" + resources[i].email +"</span></li></br>" +
-                    "<li><b>Phone #:</b> <span id='r_phone'></br>"+ resources[i].phone +"</span></li></br>" +
-                    "<li><b>Address:</b> <span id='r_address'></br>" + resources[i].address + "</span></li></br>" +
-                    "<li><b>Office:</b> <span id='r_officeName'></br>" + resources[i].office_name +"</span></li>" +
-                "</ul>" +
-            "</div>";
+                    "<ul id='r_contactInfo'>" +
+                        "<li><b>Website:</b> <span id='r_url'></br>" + resources[i].website +"</span></li></br>" +
+                        "<li><b>Email:</b> <span id='r_email'></br>" + resources[i].email +"</span></li></br>" +
+                        "<li><b>Phone #:</b> <span id='r_phone'></br>"+ resources[i].phone +"</span></li></br>" +
+                        "<li><b>Address:</b> <span id='r_address'></br>" + resources[i].address + "</span></li></br>" +
+                        "<li><b>Office:</b> <span id='r_officeName'></br>" + resources[i].office_name +"</span></li>" +
+                    "</ul>" +
+                "</div>";
 
-            resource_table.insertRow().outerHTML = "</br>";
+                resource_table.insertRow().outerHTML = "</br>";
+            }
         }
-    }
 
-    function disp_permission_error() {
-        var table = document.getElementById('resource_table');
-        while (table.firstChild) {
-            table.removeChild(table.firstChild);
+        function disp_permission_error() {
+            var table = document.getElementById('resource_table');
+            while (table.firstChild) {
+                table.removeChild(table.firstChild);
+            }
+            var resource_table = document.createElement('tbody');
+            table.appendChild(resource_table);
+            resource_table.insertRow().outerHTML =
+                "<tr>You must be a volunteer user to access and verify unverified resources!</tr>"
         }
-        var resource_table = document.createElement('tbody');
-        table.appendChild(resource_table);
-        resource_table.insertRow().outerHTML =
-            "<tr>You must be a volunteer user to access and verify unverified resources!</tr>"
-    }
 
-    function onPageLoad(){
-        // Display the resources already in the database.
-        console.log("Page loaded");
-        load_resources();
-    }
+        function onPageLoad(){
+            // Display the resources already in the database.
+            console.log("Page loaded");
+            load_resources();
+        }
 
-    $(document).on('change', 'input[type=checkbox]', function(e) {
-        load_resources();});
+        $(document).on('change', 'input[type=checkbox]', function(e) {
+            load_resources();});
 
-    $(document).ready(function(){onPageLoad();});
+        $(document).ready(function(){onPageLoad();});
     </script>
 </head>
-    <body>
-        <img id="tplogo" src="static/img/tplogo.png" height="90px" width="90px">
-        <div class="top-bar" id="sorting_options">
-            <!-- based on instructions from W3 Schools -->
-			<div id="dropdown">
-				<select id="res_type" onchange="load_resources()">
-				</select>
 
-				<script type="text/javascript">
-					var SCRIPT_ROOT = {{ request.script_root| tojson | safe }};
-					var VE_CATEGORIES_URL = SCRIPT_ROOT + "/_verifiedcategories";
-					var UN_CATEGORIES_URL = SCRIPT_ROOT + "/_unverifiedcategories";
-					var ALL_CATEGORIES_URL = SCRIPT_ROOT + "/_allcategories";
+<body>
+    <img id="tplogo" src="static/img/tplogo.png" height="90px" width="90px">
+    <div class="top-bar" id="sorting_options">
+        <!-- based on instructions from W3 Schools -->
+        <div id="dropdown">
+            <select id="res_type" onchange="load_resources()">
+  				</select>
+            <script type="text/javascript">
+                var SCRIPT_ROOT = {{ request.script_root| tojson | safe }};
+                  					var VE_CATEGORIES_URL = SCRIPT_ROOT + "/_verifiedcategories";
+                  					var UN_CATEGORIES_URL = SCRIPT_ROOT + "/_unverifiedcategories";
+                  					var ALL_CATEGORIES_URL = SCRIPT_ROOT + "/_allcategories";
 
-					// Scrap the collection and generate the dropdown with the
-					// Verified categories
-					function populateCategories() {
-						$.getJSON(VE_CATEGORIES_URL, {}, function (data) {
-							var all_types = data.result.types;
-							console.log(all_types);
-							// Add the default option
-							var inner = "<option value=\"\" disabled selected hidden>Select resource type</option>";
-							for (var i = 0; i < all_types.length; i++) {
-								inner += "<option value=\"" + all_types[i] + "\">" + all_types[i] + "</option>";
-							}
-							// Add the unverified option
-							inner += "<option value=\"Unverified Resources\">Unverified Resources</option>";
+                  					// Scrap the collection and generate the dropdown with the
+                  					// Verified categories
+                  					function populateCategories() {
+                  						$.getJSON(VE_CATEGORIES_URL, {}, function (data) {
+                  							var all_types = data.result.types;
+                  							console.log(all_types);
+                  							// Add the default option
+                  							var inner = "<option value=\"\" disabled selected hidden>Select resource type</option>";
+                  							for (var i = 0; i < all_types.length; i++) {
+                  								inner += "<option value=\"" + all_types[i] + "\">" + all_types[i] + "</option>";
+                  							}
+                  							// Add the unverified option
+                  							inner += "<option value=\"Unverified Resources\">Unverified Resources</option>";
 
-							// Set the innerHTML
-							$("#res_type")[0].innerHTML = inner;
-						});
-					}
+                  							// Set the innerHTML
+                  							$("#res_type")[0].innerHTML = inner;
+                  						});
+                  					}
 
-					// Trigger on load
-					$(document).ready(function () { populateCategories(); });
-				</script>
-			</div>
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-              <label class="btn btn-group	btn-default">
-                <input type="checkbox" name="options" id="ohp_box" autocomplete="off" > Oregon Health Plan
-              </label>
-              <label class="btn btn-group	 btn-default">
-                <input type="checkbox" name="options" id="pvt_ins_box" autocomplete="off"> Private Insurance
-              </label>
-              <label class="btn btn-group btn-default">
-                <input type="checkbox" name="options" id="monitor_hormones_box" autocomplete="off"> Monitors Hormones
-              </label>
+                  					// Trigger on load
+                  					$(document).ready(function () { populateCategories(); });
+            </script>
+        </div>
+        <div class="btn-group btn-group-toggle" id="toggle-buttons" data-toggle="buttons">
+            <label class="btn btn-group	btn-default">
+                  <input type="checkbox" name="options" id="ohp_box" autocomplete="off" > Oregon Health Plan
+                </label>
+            <label class="btn btn-group	 btn-default">
+                  <input type="checkbox" name="options" id="pvt_ins_box" autocomplete="off"> Private Insurance
+                </label>
+            <label class="btn btn-group btn-default">
+                  <input type="checkbox" name="options" id="monitor_hormones_box" autocomplete="off"> Monitors Hormones
+                </label>
+        </div>
+        <form class="form-inline" id="log-in-container-container">
+            <div class="form-group">
+                <label for="inputPassword2" class="sr-only">Username</label>
+                <input type="username" class="input-sm form-control" id="login-username" placeholder="Username">
             </div>
-
-            <a class="btn btn-warning btn-xs" id="submit-button" href="submit" role="button">Submit New Resource</a>
-          </div>
-        <div id = "page-content-wrapper">
-          <div class= "container">
-            <h2>Current Resources: </h2>
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="inputPassword2" class="sr-only">Password</label>
+                <input type="password" class="input-sm form-control" id="login-password" placeholder="Password">
+            </div>
+            <button type="submit" class="btn btn-warning btn-sm">Log In</button>
+        </form>
+    </div>
+    <div id="page-content-wrapper">
+        <div class="container">
+            <h2>Resources: </h2>
             <!-- Table to be filled in by js functions -->
             <table id="resource_table">
-                <tbody>
-                    <template class="resource">
-                    <!-- <div class = "r_img_div"> <img src = "baa3.png" class = "r_image" width = "150" height = "150" > </div> -->
-                    <div r_head>
-                        <div id="r_titleDiv">
-                            <h3 id="r_title">PLACEHOLDER TITLE</h3>
-                        </div>
-                        <h4 id="r_category">Category</h4>
-                        </br>
-                        <div id="r_providerName">ProviderName</div>
-                    </div>
-                    <ul id="r_contactInfo">
-                        <li><b>Website:</b> <span id="r_url">N/A</span></li>
-                        <li><b>Email:</b> <span id="r_email">N/A</span></li>
-                        <li><b>Phone #:</b> <span id="r_phone">N/A</span></li>
-                        <li><b>Address:</b> <span id="r_address">N/A</span></li>
-                        <li><b>Office:</b> <span id="r_officeName">N/A</span></li>
-                    </ul>
-                    <ul id="r_perks">
-                        <li id="r_takesOHP">N</li>
-                        <li id="r_takesInsurance">N</li>
-                        <li id="r_takesInsurance">N</li>
-                        <li id="r_takesInsurance">N</li>
-                        <li id="r_takesInsurance">N</li>
-                    </ul>
-                </template>
-                </tbody>
             </table>
             <br />
         </div>
-          <div id= "donation-box">
-            </br>
-            </br>
-            </br>
+        <div id="donation-box">
         </div>
-        </div>
-      </div>
-    </body>
+    </div>
     <footer class="page-footer">
         <div id="contact">
-          <ul id = "contact-list">
-            <li>
-              <h3>Email</h3>
-              <p>admin@transponder.community</p>
-            </li>
-            <li>
-              <h3>Phone</h3>
-              <p>508-443-6337 (4GENDER)</p>
-            </li>
-            <li>
-              <h3>Mailing Address</h3>
-              <p>541 Willamette St #407a
-              Eugene, OR 97401</p>
-            </li>
-          </dd>
-        </ul>
+            <ul id="contact-list">
+                <li id="c-Email">
+                    <h3>Email</h3>
+                    <p>admin@transponder.community</p>
+                </li>
+                <li id="c-Phone">
+                    <h3>Phone</h3>
+                    <p>508-443-6337 (4GENDER)</p>
+                </li>
+                <li id="c-Address">
+                    <h3>Mailing Address</h3>
+                    <p>541 Willamette St #407a Eugene, OR 97401</p>
+                </li>
+            </ul>
+
         </div>
         <div id="bottom-bar">
-          Team Salmon - Andrea Nosler, Narayana Emery, Samuel Champer - Hack for a Cause 2018
+            Team Salmon - Andrea Nosler, Narayana Emery, Samuel Champer - Hack for a Cause 2018
+            <a class="btn btn-warning btn-xs" id="submit-button" href="submit" role="button">Submit New Resource</a>
+
         </div>
     </footer>
+</body>
 </html>
