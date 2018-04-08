@@ -278,6 +278,7 @@ def delete():
     result = {"resources": get_unverified()}
     return flask.jsonify(result=result)
 
+
 # Get unverified resources.
 @app.route("/_unverified")
 def unverified():
@@ -296,7 +297,7 @@ def unverified():
 def verify():
     if not flask.session["volunteer"]:
         # Only volunteers have access to this function.
-        return flask.jsonify(result={err:"err"})
+        return flask.jsonify(result={err: "err"})
     # Get the name of the resource to verify from user input:
     name = flask.request.args.get('name')
     app.logger.debug("verifying resource")
@@ -332,11 +333,11 @@ def get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pv
         del record['_id']
         if record["verified"] is False:
             matching_record = False
-        if filter_ohp and not record["takes_OHP"]:
+        if filter_ohp and (not record["takes_OHP"] or record["takes_OHP"] != "Yes"):
             matching_record = False
-        if filter_monitor_hormones and not record["can_monitor_hormones"]:
+        if filter_monitor_hormones and (not record["can_monitor_hormones"] or record["can_monitor_hormones"] != "HRT" ):
             matching_record = False
-        if filter_pvt_ins and not record["takes_private_ins"]:
+        if filter_pvt_ins and (not record["takes_private_ins"] or record["takes_private_ins"] != "Yes"):
             matching_record = False
         if matching_record:
             records.append(record)
