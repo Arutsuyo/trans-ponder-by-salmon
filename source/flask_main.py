@@ -371,7 +371,6 @@ def does_resource_exist(type, name):
     """
     Scraps the collection to see if the resource exists already
     """
-    app.logger.debug("Finding resource: ", type, ", ", name)
     for record in collection.find({"type": type, "name": name}):
         app.logger.debug(record)
         return True
