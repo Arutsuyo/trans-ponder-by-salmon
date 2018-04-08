@@ -98,22 +98,29 @@
 
             // Put the resource in the table:
             resource_table.insertRow().outerHTML =
+              "<div class='resource'>" +
+                "<div r_head>" +
+                    "<div id='r_titleDiv'>" +
+                        "<h3 id='r_title'>" + resources[i].name +"</h3>" +
+                    "</div>" +
+                    "<h4 id='r_category'>"+ resources[i].type +"</h4>" +
+                    "</br>" +
+                    "<div id='r_providerName'>" + resources[i].website + "</div>"+
+                "</div>" +
+                "<ul id='r_contactInfo'>" +
+                    "<li><b>Website:</b> <span id='r_url'>" + resources[i].website +"</span></li>" +
+                    "<li><b>Email:</b> <span id='r_email'>" + resources[i].email +"</span></li>" +
+                    "<li><b>Phone #:</b> <span id='r_phone'>"+ resources[i].phone +"</span></li>" +
+                    "<li><b>Address:</b> <span id='r_address'>" + resources[i].address + "</span></li>" +
+                    "<li><b>Office:</b> <span id='r_officeName'>" + resources[i].office_name +"</span></li>" +
+                "</ul>" +
+                "<ul id='r_perks'>" +
+                    "<li id='r_takesOHP'>" + resources[i].takes_OHP +"</li>" +
+                    "<li id='r_takesInsurance'>" + resources[i].takes_private_ins + "</li>" +
+                "</ul>" +
+            "</div>";
 
-                "<tr>" + resources[i].name + ", " + resources[i].type + "</tr>" +
-                "<tr> Website: " + resources[i].website + "</tr>" +
-                "<tr> Paperwork for this provider allows choices beyond just m/f: "  + resources[i].paperwork_not_only_mf + "</tr>" +
-                "<tr> Paperwork for this provider asks for pronoun: " + resources[i].paperwork_asks_for_pronoun + "</tr>" +
-                "<tr> Additional notes for this provider: " + resources[i].notes + "</tr>" +
-                "<tr> Provider has capacity to monitor hormone levels: " + resources[i].can_monitor_hormones + "</tr>" +
-                "<tr> Provider uses a sliding scale for payment: " + resources[i].sliding_scale + "</tr>" +
-                "<tr> Provider email: " + resources[i].email + "</tr>" +
-                "<tr> Provider phone number: " + resources[i].phone + "</tr>" +
-                "<tr> Provider is diversity aware: " + resources[i].diversity_aware + "</tr>" +
-                "<tr> Provider takes private insurance: " + resources[i].takes_private_ins + "</tr>" +
-                "<tr> Provider takes OHP: " + resources[i].takes_OHP + "</tr>" +
-                "<tr> Office name, if applicable: " + resources[i].office_name + "</tr>" +
-                "<tr> Provider address: " + resources[i].address + "</tr>" +
-                    "<tr> <br /><br /><br /></tr>"
+            resource_table.insertRow().outerHTML = "</br>";
         }
     }
 
@@ -254,7 +261,7 @@
         </ul>
         </div>
         <div id="bottom-bar">
-          Team Salmon - Andi Nosler, Narayana Emery, Samuel Champer - Hack for a Cause 2018
+          Team Salmon - Andrea Nosler, Narayana Emery, Samuel Champer - Hack for a Cause 2018
         </div>
     </footer>
 </html>
