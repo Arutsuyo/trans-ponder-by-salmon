@@ -3,24 +3,24 @@
 <html>
 
 <head>
-    <title>Resource Directory</title>
-    <meta charset="UTF-8">
-    <!-- 'viewport' is used by bootstrap to respond to device size -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Javascript:  JQuery from a content distribution network (CDN) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <!-- Bootstrap includes javascript and css  (must follow jquery) -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Fira+Sans" rel="stylesheet">
-    <link rel="icon" type="image/png" href="/static/img/favicon.png">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
-    </script>
+	<title>Resource Directory</title>
+	<meta charset="UTF-8">
+	<!-- 'viewport' is used by bootstrap to respond to device size -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- Javascript:  JQuery from a content distribution network (CDN) -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<!-- Bootstrap includes javascript and css  (must follow jquery) -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Fira+Sans" rel="stylesheet">
+	<link rel="icon" type="image/png" href="/static/img/favicon.png">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
+	</script>
 
-    <!-- Our own style sheet -->
-    <link rel="stylesheet" href="static/css/style.css" />
-    <script type="text/javascript">
+	<!-- Our own style sheet -->
+	<link rel="stylesheet" href="static/css/style.css" />
+	<script type="text/javascript">
     var SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     var CREATE_URL = SCRIPT_ROOT + "/_create";
     var VERIFY_URL = SCRIPT_ROOT + "/_verify";
@@ -222,17 +222,16 @@
         load_resources();});
 
     $(document).ready(function(){onPageLoad();});
-    </script>
+	</script>
 </head>
-    <body>
-        <img id="tplogo" src="static/img/tplogo.png" height="90px" width="90px">
-        <div class="top-bar" id="sorting_options">
-            <!-- based on instructions from W3 Schools -->
-			<div id="dropdown">
-				<select id="res_type" onchange="load_resources()">
-				</select>
+<body>
+	<img id="tplogo" src="static/img/tplogo.png" height="90px" width="90px">
+	<div class="top-bar" id="sorting_options">
+		<!-- based on instructions from W3 Schools -->
+		<div id="dropdown">
+			<select id="res_type" onchange="load_resources()"></select>
 
-				<script type="text/javascript">
+			<script type="text/javascript">
 					var SCRIPT_ROOT = {{ request.script_root| tojson | safe }};
 					var VE_CATEGORIES_URL = SCRIPT_ROOT + "/_verifiedcategories";
 					var UN_CATEGORIES_URL = SCRIPT_ROOT + "/_unverifiedcategories";
@@ -251,7 +250,7 @@
 							else {
 								alert("Logged in!")
 							}
-						}); 
+						});
 					}
 
 					// Scrap the collection and generate the dropdown with the
@@ -276,63 +275,63 @@
 
 					// Trigger on load
 					$(document).ready(function () { populateCategories(); });
-				</script>
+			</script>
+		</div>
+		<div class="btn-group btn-group-toggle" id="toggle-buttons" data-toggle="buttons">
+			<label class="btn btn-group	btn-default">
+				<input type="checkbox" name="options" id="ohp_box" autocomplete="off"> Oregon Health Plan
+			</label>
+			<label class="btn btn-group	 btn-default">
+				<input type="checkbox" name="options" id="pvt_ins_box" autocomplete="off"> Private Insurance
+			</label>
+			<label class="btn btn-group btn-default">
+				<input type="checkbox" name="options" id="monitor_hormones_box" autocomplete="off"> Monitors Hormones
+			</label>
+		</div>
+		<form class="form-inline" id="log-in-container-container">
+			<div class="form-group">
+				<label for="inputPassword2" class="sr-only">Username</label>
+				<input type="text" class="input-sm form-control" id="login-username" placeholder="Username">
 			</div>
-        <div class="btn-group btn-group-toggle" id="toggle-buttons" data-toggle="buttons">
-            <label class="btn btn-group	btn-default">
-                  <input type="checkbox" name="options" id="ohp_box" autocomplete="off" > Oregon Health Plan
-                </label>
-            <label class="btn btn-group	 btn-default">
-                  <input type="checkbox" name="options" id="pvt_ins_box" autocomplete="off"> Private Insurance
-                </label>
-            <label class="btn btn-group btn-default">
-                  <input type="checkbox" name="options" id="monitor_hormones_box" autocomplete="off"> Monitors Hormones
-                </label>
-        </div>
-        <form class="form-inline" id="log-in-container-container">
-            <div class="form-group">
-                <label for="inputPassword2" class="sr-only">Username</label>
-                <input type="username" class="input-sm form-control" id="login-username" placeholder="Username">
-            </div>
-            <div class="form-group mx-sm-3 mb-2">
-                <label for="inputPassword2" class="sr-only">Password</label>
-                <input type="password" class="input-sm form-control" id="login-password" placeholder="Password">
-            </div>
-            <button type="button" class="btn btn-warning btn-sm" onclick="login()">Log In</button>
-        </form>
-    </div>
-    <div id="page-content-wrapper">
-        <div class="container">
-            <h2>Resources: </h2>
-            <!-- Table to be filled in by js functions -->
-            <table id="resource_table">
-            </table>
-            <br />
-        </div>
-        <div id="donation-box">
-        </div>
-    </div>
-    <footer class="page-footer">
-        <div id="contact">
-            <ul id="contact-list">
-                <li id="c-Email">
-                    <h3>Email</h3>
-                    <p>admin@transponder.community</p>
-                </li>
-                <li id="c-Phone">
-                    <h3>Phone</h3>
-                    <p>508-443-6337 (4GENDER)</p>
-                </li>
-                <li id="c-Address">
-                    <h3>Mailing Address</h3>
-                    <p>541 Willamette St #407a Eugene, OR 97401</p>
-                </li>
-            </ul>
-        </div>
-        <div id="bottom-bar">
-            Team Salmon - Andrea Nosler, Narayana Emery, Samuel Champer - Hack for a Cause 2018
-            <a class="btn btn-primary btn-xs" id="register-button" href="register" role="button">Register</a>
-            <a class="btn btn-warning btn-xs" id="submit-button" href="submit" role="button">Submit New Resource</a>
-        </div>
-    </footer>
+			<div class="form-group mx-sm-3 mb-2">
+				<label for="inputPassword2" class="sr-only">Password</label>
+				<input type="password" class="input-sm form-control" id="login-password" placeholder="Password">
+			</div>
+			<button type="button" class="btn btn-warning btn-sm" onclick="login()">Log In</button>
+		</form>
+	</div>
+	<div id="page-content-wrapper">
+		<div class="container">
+			<h2>Resources: </h2>
+			<!-- Table to be filled in by js functions -->
+			<table id="resource_table"></table>
+			<br />
+		</div>
+		<div id="donation-box">
+		</div>
+	</div>
+	<footer class="page-footer">
+		<div id="contact">
+			<ul id="contact-list">
+				<li id="c-Email">
+					<h3>Email</h3>
+					<p>admin@transponder.community</p>
+				</li>
+				<li id="c-Phone">
+					<h3>Phone</h3>
+					<p>508-443-6337 (4GENDER)</p>
+				</li>
+				<li id="c-Address">
+					<h3>Mailing Address</h3>
+					<p>541 Willamette St #407a Eugene, OR 97401</p>
+				</li>
+			</ul>
+		</div>
+		<div id="bottom-bar">
+			Team Salmon - Andrea Nosler, Narayana Emery, Samuel Champer - Hack for a Cause 2018
+			<a class="btn btn-primary btn-xs" id="register-button" href="register" role="button">Register</a>
+			<a class="btn btn-warning btn-xs" id="submit-button" href="submit" role="button">Submit New Resource</a>
+		</div>
+	</footer>
+</body>
 </html>
