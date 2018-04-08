@@ -34,7 +34,7 @@ app = flask.Flask(__name__)
 app.secret_key = CONFIG.SECRET_KEY
 
 
-####
+###
 # Database connection per server process:
 ###
 try:
@@ -53,7 +53,7 @@ except:
 class User:
     def __init__(self, username, password, userType):
         self.username = username
-        self.password = password # Never storing the actual password, just a hash
+        self.password = password  # Never storing the actual password, just a hash
         self.userType = userType
 
     # ***ONLY EVER CALL WHEN CHAINED AND USING generate_password_hash(pword) ***
@@ -94,6 +94,7 @@ def find_by_username(uname):
 # end find_by_username
 
 
+# App route to register a new user.
 @app.route('/_register')
 def register_user():
     app.logger.debug("Checking Registration")
@@ -102,7 +103,7 @@ def register_user():
     password = flask.request.args.get('password', type=str)
 
     if username == '' or password == '':
-        result = {'error' : 'Username or password was blank'}
+        result = {'error': 'Username or password was blank'}
         return flask.jsonify(result=result)
 
     if flask.request.args.get('volunteer_pass', type=str) == password_for_volunteers:
@@ -121,6 +122,8 @@ def register_user():
         result = {'error': "User failed"}
         return flask.jsonify(result=result)
 
+
+# App route to check inputted username.
 @app.route('/_checkname')
 def check_user_name():
     app.logger.debug("Checking Name Availability")
@@ -135,7 +138,7 @@ def check_user_name():
         return flask.jsonify(result=False)
 
 
-
+# App route for user to log in.
 @app.route('/_login')
 def login_user():
     app.logger.debug("Checking Login")
@@ -260,18 +263,18 @@ def create():
         }
 
     if does_resource_exist(type, name):
-        result = {"error" : "Resource is already in the database"}
+        result = {"error": "Resource is already in the database"}
     else:
         res = collection.insert(new)
         if hasattr(res, "writeConcernError"):
             app.logger.debug(res["writeConcernError"])
-            result = {"error" : res["writeConcernError"]}
+            result = {"error": res["writeConcernError"]}
         elif hasattr(res, "writeError"):
             app.logger.debug(res["writeError"])
-            result = {"error" : res["writeError"]}
+            result = {"error": res["writeError"]}
         else:
             app.logger.debug("Resource Created")
-            result = {"message" : "Resource created successfully"}
+            result = {"message": "Resource created successfully"}
             
     return flask.jsonify(result=result)
 
@@ -325,28 +328,30 @@ def scrap_all_resource_list():
     """
     Scraps the collection to generate a list of all resource categories
     """
-    all_types = collection.distinct( "type" )
-    result = {"types" : all_types}
+    all_types = collection.distinct("type")
+    result = {"types": all_types}
     print(result)
     return flask.jsonify(result=result)
+
 
 @app.route("/_verifiedcategories")
 def scrap_verified_resource_list():
     """
     Scraps the collection to generate a list of verified categories
     """
-    all_types = collection.distinct( "type", { "verified" : True } )
-    result = {"types" : all_types}
+    all_types = collection.distinct("type", {"verified": True})
+    result = {"types": all_types}
     print(result)
     return flask.jsonify(result=result)
+
 
 @app.route("/_unverifiedcategories")
 def scrap_unverified_resource_list():
     """
     Scraps the collection to generate a list of unverified categories
     """
-    all_types = collection.distinct( "type", { "verified" : False } )
-    result = {"types" : all_types}
+    all_types = collection.distinct("type", {"verified": False})
+    result = {"types": all_types}
     print(result)
     return flask.jsonify(result=result)
 
@@ -369,10 +374,11 @@ def does_resource_exist(type, name):
     Scraps the collection to see if the resource exists already
     """
     app.logger.debug("Finding resource: ", type, ", ", name)
-    for record in collection.find({"type": type, "name" : name}):
+    for record in collection.find({"type": type, "name": name}):
         app.logger.debug(record)
         return True
     return False
+
 
 def get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins):
     """
@@ -388,9 +394,6 @@ def get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pv
         del record['_id']
         if record["verified"] is False:
             matching_record = False
-        # if filter_ohp and (not record["takes_OHP"] or record["takes_OHP"] != "Yes"):
-        # if filter_monitor_hormones and (not record["can_monitor_hormones"] or record["can_monitor_hormones"] != "HRT" ):
-        # if filter_pvt_ins and (not record["takes_private_ins"] or record["takes_private_ins"] != "Yes"):
         if filter_ohp and not record["takes_OHP"]:
             matching_record = False
         if filter_monitor_hormones and not record["can_monitor_hormones"]:
@@ -434,67 +437,7 @@ def verify_resource(name):
                           {"$set": {"verified": True}})
 
 
-def test():
-    print("############ TESTING SOME FUNCTIONS ############")
-    new = {"website": "http://www.eugenecompletewellness.com/",
-    "paperwork_not_only_mf": "",
-    "paperwork_asks_for_pronoun": "",
-    "notes": "",
-    "can_monitor_hormones": True,
-    "sliding_scale": "",
-    "name": "Rob Voorhees2",
-    "email": "info@eugenecompletewellness.com",
-    "phone": "541-653-9324",
-    "type": "Chiropractor",
-    "diversity_aware": "",
-    "takes_private_ins": True,
-    "takes_OHP": "",
-    "office_name": "Eugene Complete Wellness",
-    "address": "240 E 12th Ave, Eugene, OR 97401",
-           "verified": False}
-    collection.insert(new)
-
-    new = {"website": "www.womenscare.com",
-    "paperwork_not_only_mf": "No, though they say they are updating this soon",
-    "paperwork_asks_for_pronoun": "No.",
-    "notes": "",
-    "can_monitor_hormones": True,
-    "sliding_scale": "",
-    "name": "Douglas Austin2",
-    "email": "",
-    "phone": "541-683-1559",
-    "type": "Chiropractor",
-    "diversity_aware": "No.",
-    "takes_private_ins": True,
-    "takes_OHP": False,
-    "office_name": "Womens Care",
-    "address": "590 Country Club Pkwy B, Eugene, OR 97401",
-           "verified": False}
-    collection.insert(new)
-
-    # li = get_unverified()
-    # for i in li:
-    #     print(i)
-    verify_resource("Rob Voorhees2")
-    verify_resource("Douglas Austin2")
-    # print("TEST VERIFY")
-    # li = get_unverified()
-    # for i in li:
-    #     print(i)
-    # print("TEST GET Endocrinologist")
-    # li = get_db_entries("Endocrinologist", False, True, False)
-    # for i in li:
-    #     print(i)
-    del_resource("Rob Voorhees2")
-    del_resource("Douglas Austin2")
-    # print("TEST: DELETED")
-    # li = get_db_entries("Chiropractor", False, False, False)
-    # for i in li:
-    #     print(i)
-
-
 if __name__ == "__main__":
-    test() #TODO ERASE
     app.debug = CONFIG.DEBUG
     app.logger.setLevel(logging.DEBUG)
     app.run(port=CONFIG.PORT, host="localhost")
