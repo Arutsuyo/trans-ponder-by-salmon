@@ -220,3 +220,6 @@ ul{
   padding: 30px;
   border-radius: 20px;
 }
+#username, #password, #volunteer_pass{
+  margin-bottom: 8px;
+}

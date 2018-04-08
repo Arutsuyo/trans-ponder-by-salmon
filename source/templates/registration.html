@@ -47,14 +47,10 @@
     				$('#username').val('');
     				$('#password').val('');
     				$('#volunteer_pass').val('');
-    				$('#message')[0].innerHTML = 'User Added successfully!';
-    				$('#goodname')[0].innerHTML = '';
-    				$('#goodnameul').hide();
-    				$('#spacer').removeAttr("hidden");
+					 alert('User Added successfully!');
     			}
     	});
     }
-
     	function check_user() {
     		var username = $('#username').val();
     		console.log("User: ", username);
@@ -66,14 +62,14 @@
     			if (res) {
     				console.log("Name Unavailable");
     				$('#spacer').hide();
-    				$('#goodname')[0].innerHTML = 'Unavailable';
-    				$('#goodnameul').removeAttr("hidden");
+    				$('#goodname')[0].innerHTML = '<span class = "text-muted">' + username + ' is unavailable</span>';
+    				$('#goodname').removeAttr("hidden");
     			}
     			else {
     				console.log("Name Available")
     				$('#spacer').hide();
-    				$('#goodname')[0].innerHTML = 'Available';
-    				$('#goodnameul').removeAttr("hidden");
+    				$('#goodname')[0].innerHTML = '<span class = "text-muted">' + username + ' is available</span>';
+    				$('#goodname').removeAttr("hidden");
     			}
     		});
     }
@@ -100,18 +96,13 @@
             <!-- based on instructions from W3 Schools -->
         <div id = "page-content-wrapper">
           <div class="container" id = "log-in-container">
-							<h1>Log In:</h1>
-							<ul id="messageul" hidden>
-								<li id="message" />
-							</ul>
+							<h1>Registration Information:</h1>
 							<br />
 							<div id = "log-in">
 								Username
 								<input class = "form-control" type="text" name="username" id="username" placeholder="(Username)" />
-								<ul id="goodnameul" hidden>
-									<li id="goodname">
-								</ul>
-								<br id="spacer"/>
+								<p id="goodname" hidden >
+							</p>
 								Password
 								<input class = "form-control" type="text" name="password" id="password" placeholder="(Password)" />
 								<br />
