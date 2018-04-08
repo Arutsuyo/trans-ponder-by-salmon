@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-	<title>User Sign-in</title>
+	<title>Submit new resource</title>
 	<!-- 'viewport' is used by bootstrap to respond to device size -->
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- Javascript:  JQuery from a content distribution network (CDN) -->
@@ -13,38 +13,90 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
 	</script>
 	<!-- Our own style sheet -->
-	<link rel="stylesheet" href="/static/css/memos.css" />
+	<!--<link rel="stylesheet" href="/static/css/memos.css" />-->
 </head>
 <body>
 	<div class="container">
-			<h1>Username / Password testing: </h1>
-			<div class="col-md-6">
-				<input type="text" name="username" id="username" value="tester1" />
-				<br />
-				<input type="text" name="password" id="password" value="tester1" />
-				<br />
-			</div> <!-- columns 5-10 -->
-			<div class="col-md-6">
-				<button class="submit" id="regButton">Register</button>
-				<br />
-				<button class="submit" id="logButton">Login</button>
-			</div>
+		<h1>Resource information:</h1>
+		<div>
+			<input type="text" name="type" id="type" placeholder="Category" />
+			<br />
+			<input type="text" name="name" id="name" placeholder="Name" />
+			<br />
+			<input type="text" name="office_name" id="office_name" placeholder="Name of Office" />
+			<br />
+			<input type="text" name="address" id="address" placeholder="Address" />
+			<br />
+			<input type="text" name="phone" id="phone" placeholder="Phone" />
+			<br />
+			<input type="text" name="email" id="email" placeholder="Email" />
+			<br />
+			<input type="text" name="website" id="website" placeholder="Website" />
+			<br />
+			<input type="text" name="takes_OHP" id="takes_OHP" placeholder="Do they accept OHP?" />
+			<br />
+			<input type="text" name="takes_private_ins" id="takes_private_ins" placeholder="Do they accept private insurance" />
+			<br />
+			<input type="text" name="sliding_scale" id="sliding_scale" placeholder="Do they have a sliding scale payment system" />
+			<br />
+			<input type="text" name="diversity_aware" id="diversity_aware" placeholder="Does the provider have Diversity Awareness Training?" />
+			<br />
+			<input type="text" name="paperwork_not_only_mf" id="paperwork_not_only_mf" placeholder="Does the providers paperwork only have Male/Female pronouns" />
+			<br />
+			<input type="text" name="paperwork_asks_for_pronoun" id="paperwork_asks_for_pronoun" placeholder="Does the paperwork ask for pronouns" />
+			<br />
+			<input type="text" name="can_monitor_hormones" id="can_monitor_hormones" placeholder="Can the Provider monitor hormones" />
+			<br />
+			<input type="text" name="notes" id="notes" placeholder="Extra notes / Details" />
+			<br />
+			<button class="submit" id="submit" type="button" <!-- type:button removes default submit-->>submit</button>
+		</div>
 		<script type="text/javascript">
 
 var SCRIPT_ROOT = {{ request.script_root| tojson | safe }};
-var REGISTER_URL = SCRIPT_ROOT + "/_register";
-var LOGIN_URL = SCRIPT_ROOT + "/_login";
+var CREATE_URL = SCRIPT_ROOT + "/_create";
 
-function add_user() {
-	console.log("Adding a User: ");
-	var username = $('#username').val();
-	var password = $('#password').val();
-	var userType = "Volunteer";
-	console.log("User: ", username, password, userType);
-	$.getJSON(REGISTER_URL, {
-		username: username,
-		password: password,
-		userType: userType
+function add_resource() {
+	console.log("Adding a Resource");
+	var type						= $("#type").val();
+	var name						= $("#name").val();
+	var office_name					= $("#office_name").val();
+	var address						= $("#address").val();
+	var phone						= $("#phone").val();
+	var email						= $("#email").val();
+	var website						= $("#website").val();
+	var takes_OHP					= $("#takes_OHP").val();
+	var takes_private_ins			= $("#takes_private_ins").val();
+	var sliding_scale				= $("#sliding_scale").val();
+	var diversity_aware				= $("#diversity_aware").val();
+	var paperwork_not_only_mf		= $("#paperwork_not_only_mf").val();
+	var paperwork_asks_for_pronoun	= $("#paperwork_asks_for_pronoun").val();
+	var can_monitor_hormones		= $("#can_monitor_hormones").val();
+	var notes						= $("#notes").val();
+
+	// Prefer these fields as bools (?)
+	takes_OHP = (takes_OHP == '' || takes_OHP == "no") ? false : takes_OHP;
+	takes_private_ins = (takes_private_ins == '' || takes_private_ins == "no") ? false : takes_private_ins;
+	paperwork_not_only_mf = (paperwork_not_only_mf == '' || paperwork_not_only_mf == "no") ? false : paperwork_not_only_mf;
+	paperwork_asks_for_pronoun = (paperwork_asks_for_pronoun == '' || paperwork_asks_for_pronoun == "no") ? false : paperwork_asks_for_pronoun;
+	can_monitor_hormones = (can_monitor_hormones == '' || can_monitor_hormones == "no") ? false : can_monitor_hormones;
+
+	$.getJSON(CREATE_URL, {
+		"type": type,
+		"name" : name,
+		"office_name" : office_name,
+		"address" : address,
+		"phone" : phone,
+		"email" : email,
+		"website" : website,
+		"takes_OHP" : takes_OHP,
+		"takes_private_ins" : takes_private_ins,
+		"sliding_scale" : sliding_scale,
+		"diversity_aware" : diversity_aware,
+		"paperwork_not_only_mf" : paperwork_not_only_mf,
+		"paperwork_asks_for_pronoun" : paperwork_asks_for_pronoun,
+		"can_monitor_hormones" : can_monitor_hormones,
+		"notes" : notes
 		}, function (data) {
 			var res = data.result;
 			console.log(res);
@@ -52,51 +104,18 @@ function add_user() {
 				console.log(res.error);
 			}
 			else {
-				console.log("User added")
-				$('#username').val('');
-				$('#password').val('');
+				console.log("Resource added successfully");
 			}
 	});
 }
-
-	function check_user() {
-		console.log("Checking a User: ");
-		var username = $('#username').val();
-		var password = $('#password').val();
-		var userType = "Volunteer";
-		console.log("User: ", username, password, userType);
-		$.getJSON(LOGIN_URL, {
-			username: username,
-			password: password,
-			userType: userType
-		}, function (data) {
-			var res = data.result;
-			console.log(res);
-			if (res.error) {
-				console.log(res.error);
-			}
-			else {
-				console.log("Login Successful")
-				$('#username').val('');
-				$('#password').val('');
-			}
-		});
-}
-
-
 
 $(document).ready(function () { onPageLoad(); });
 function onPageLoad() {
 	// Add a listener for the new memo button.
-	console.log("Adding Button reg")
-	$("#regButton").click(function () {
-		console.log("reg clicked")
-		add_user()
-	});
-	console.log("Adding button log")
-	$("#logButton").click(function () {
-		console.log("Log Clicked")
-		check_user()
+	console.log("Adding Button listener")
+	$("#submit").click(function (e) {
+		console.log("submit clicked");
+		add_resource();
 	});
 }
 		</script>
