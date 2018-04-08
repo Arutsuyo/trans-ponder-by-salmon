@@ -53,14 +53,14 @@ except:
 class User:
     def __init__(self, username, password, userType):
         self.username = username
-        self.password = password
+        self.password = password # Never storing the actual password, just a hash
         self.userType = userType
 
     # ***ONLY EVER CALL WHEN CHAINED AND USING generate_password_hash(pword) ***
     # such as: User(username, generate_password_hash(password), userType).save_to_db()
     # This means no passwords are ever saved in the database, only the hashs of the passwords
     def save_to_db(self):
-        app.logger.debug("Checking is User exists")
+        app.logger.debug("Checking if user exists")
         if find_by_username(self.username):
             app.logger.debug("User Already Exists")
             return False
@@ -72,18 +72,15 @@ class User:
                 "userType": self.userType,
             }
             res = users_collection.insert(new)
-            if res["nInserted"] > 0:
-                app.logger.debug("Created")
-                return True
-            elif hasattr(res, "writeConcernError"):
+            if hasattr(res, "writeConcernError"):
                 app.logger.debug(res["writeConcernError"])
                 return False
             elif hasattr(res, "writeError"):
                 app.logger.debug(res["writeError"])
                 return False
             else:
-                app.logger.debug("Unknown insertion error")
-                return False
+                app.logger.debug("Created")
+                return True
                 # end save_to_db
 
 
@@ -103,6 +100,11 @@ def register_user():
     # Get User information
     username = flask.request.args.get('username', type=str)
     password = flask.request.args.get('password', type=str)
+
+    if username == '' or password == '':
+        result = {'error' : 'Username or password was blank'}
+        return flask.jsonify(result=result)
+
     if flask.request.args.get('volunteer_pass', type=str) == password_for_volunteers:
         userType = "volunteer"
     else:
@@ -111,13 +113,27 @@ def register_user():
     # Try and register user
     if User(username, generate_password_hash(password), userType).save_to_db():
         app.logger.debug("Registration Successful")
-        result = {'message': 'User registered successfully'}
+        result = {'message': 'User registered successfully as ' + userType}
         return flask.jsonify(result=result)
     else:
         # If failed, See errors possible in save_to_db()
         app.logger.debug("Failed Registration")
         result = {'error': "User failed"}
         return flask.jsonify(result=result)
+
+@app.route('/_checkname')
+def check_user_name():
+    app.logger.debug("Checking Name Availability")
+    # Get User information
+    username = flask.request.args.get('username', type=str)
+
+    if find_by_username(username):
+        app.logger.debug("User Exists")
+        return flask.jsonify(result=True)
+    else:
+        app.logger.debug("User does not exist")
+        return flask.jsonify(result=False)
+
 
 
 @app.route('/_login')
@@ -168,10 +184,10 @@ def index():
 
 
 # Route to log in to the page.
-@app.route("/login")
-def login():
-    app.logger.debug("Login Page")
-    return flask.render_template('login.html')
+@app.route("/register")
+def register():
+    app.logger.debug("registration Page")
+    return flask.render_template('registration.html')
 
 
 # Route to submit a new resource.
@@ -242,25 +258,43 @@ def create():
         "notes": notes,
         "verified": False
         }
-    collection.insert(new)
 
-    # Return to the resources:
-    resource_type = flask.request.args.get('res_type')
-    filter_ohp = False
-    if flask.request.args.get('filter_ohp') == "True":
-        filter_ohp = True
-    filter_monitor_hormones = False
-    if flask.request.args.get('filter_monitor_hormones') == "True":
-        filter_monitor_hormones = True
-    filter_pvt_ins = False
-    if flask.request.args.get('filter_pvt_ins') == "True":
-        filter_pvt_ins = True
-    if resource_type:
-        app.logger.debug("Pulling resources of type: " + resource_type)
-        result = {"resources": get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins)}
-        return flask.jsonify(result=result)
+    # CHECK WITH SAM ABOUT THIS SECTION
+
+    #collection.insert(new)
+    ## Return to the resources:
+    #resource_type = flask.request.args.get('res_type')
+    #filter_ohp = False
+    #if flask.request.args.get('filter_ohp') == "True":
+    #    filter_ohp = True
+    #filter_monitor_hormones = False
+    #if flask.request.args.get('filter_monitor_hormones') == "True":
+    #    filter_monitor_hormones = True
+    #filter_pvt_ins = False
+    #if flask.request.args.get('filter_pvt_ins') == "True":
+    #    filter_pvt_ins = True
+    #if resource_type:
+    #    app.logger.debug("Pulling resources of type: " + resource_type)
+    #    result = {"resources": get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins)}
+    #    return flask.jsonify(result=result)
+    #else:
+    #    return flask.jsonify(dict())
+    
+    if does_resource_exist(type, name):
+        result = {"error" : "Resource is already in the database"}
     else:
-        return flask.jsonify(dict())
+        res = collection.insert(new)
+        if hasattr(res, "writeConcernError"):
+            app.logger.debug(res["writeConcernError"])
+            result = {"error" : res["writeConcernError"]}
+        elif hasattr(res, "writeError"):
+            app.logger.debug(res["writeError"])
+            result = {"error" : res["writeError"]}
+        else:
+            app.logger.debug("Resource Created")
+            result = {"message" : "Resource created successfully"}
+            
+    return flask.jsonify(result=result)
 
 
 # Delete a resource
@@ -307,6 +341,37 @@ def verify():
     return flask.jsonify(result=result)
 
 
+@app.route("/_allcategories")
+def scrap_all_resource_list():
+    """
+    Scraps the collection to generate a list of all resource categories
+    """
+    all_types = collection.distinct( "type" )
+    result = {"types" : all_types}
+    print(result)
+    return flask.jsonify(result=result)
+
+@app.route("/_verifiedcategories")
+def scrap_verified_resource_list():
+    """
+    Scraps the collection to generate a list of verified categories
+    """
+    all_types = collection.distinct( "type", { "verified" : True } )
+    result = {"types" : all_types}
+    print(result)
+    return flask.jsonify(result=result)
+
+@app.route("/_unverifiedcategories")
+def scrap_unverified_resource_list():
+    """
+    Scraps the collection to generate a list of unverified categories
+    """
+    all_types = collection.distinct( "type", { "verified" : False } )
+    result = {"types" : all_types}
+    print(result)
+    return flask.jsonify(result=result)
+
+
 # Error page(s)
 @app.errorhandler(404)
 def page_not_found(error):
@@ -319,6 +384,17 @@ def page_not_found(error):
 ##############
 # Functions available to the page code above
 ##############
+
+def does_resource_exist(type, name):
+    """
+    Scraps the collection to see if the resource exists already
+    """
+    app.logger.debug("Finding resource: ", type, ", ", name)
+    for record in collection.find({"type": type, "name" : name}):
+        app.logger.debug(record)
+        return True
+    return False
+
 def get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins):
     """
     Returns all matching resources, in a form that

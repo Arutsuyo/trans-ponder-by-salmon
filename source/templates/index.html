@@ -1,4 +1,4 @@
-
+﻿
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 
@@ -143,25 +143,39 @@
         <img id="tplogo" src="static/img/tplogo.png" height="90px" width="90px">
         <div class="top-bar" id="sorting_options">
             <!-- based on instructions from W3 Schools -->
-            <div id="dropdown">
-              <select id="res_type" onchange="load_resources()">
-                <option value="" disabled selected hidden>Select resource type</option>
-                <option value="Chiropractor">Chiropractor</option>
-                <option value="Endocrinologist">Endocrinologist</option>
-                <option value="Gender Affirming Products">Gender Affirming Products</option>
-                <option value="Gynecologist">Gynecologist</option>
-                <option value="Hair">Hair</option>
-                <option value="Laser / Electrolysis">Laser / Electrolysis</option>
-                <option value="Psychologist">Psychologist</option>
-                <option value="Social Support">Social Support</option>
-                <option value="Surgeon">Surgeon</option>
-                <option value="Surgery Scholarship">Surgery Scholarship</option>
-                <option value="Therapist / Counselor">Therapist / Counselor</option>
-                <option value="Voice Therapy">Voice Therapy</option>
-                <option value="Youth Support">Youth Support</option>
-                <option value="Unverified Resources">Unverified Resources</option>
-              </select>
-            </div>
+			<div id="dropdown">
+				<select id="res_type" onchange="load_resources()">
+				</select>
+
+				<script type="text/javascript">
+					var SCRIPT_ROOT = {{ request.script_root| tojson | safe }};
+					var VE_CATEGORIES_URL = SCRIPT_ROOT + "/_verifiedcategories";
+					var UN_CATEGORIES_URL = SCRIPT_ROOT + "/_unverifiedcategories";
+					var ALL_CATEGORIES_URL = SCRIPT_ROOT + "/_allcategories";
+
+					// Scrap the collection and generate the dropdown with the
+					// Verified categories
+					function populateCategories() {
+						$.getJSON(VE_CATEGORIES_URL, {}, function (data) {
+							var all_types = data.result.types;
+							console.log(all_types);
+							// Add the default option
+							var inner = "<option value=\"\" disabled selected hidden>Select resource type</option>";
+							for (var i = 0; i < all_types.length; i++) {
+								inner += "<option value=\"" + all_types[i] + "\">" + all_types[i] + "</option>";
+							}
+							// Add the unverified option
+							inner += "<option value=\"Unverified Resources\">Unverified Resources</option>";
+
+							// Set the innerHTML
+							$("#res_type")[0].innerHTML = inner;
+						});
+					}
+
+					// Trigger on load
+					$(document).ready(function () { populateCategories(); });
+				</script>
+			</div>
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
               <label class="btn btn-group	btn-default">
                 <input type="checkbox" name="options" id="ohp_box" autocomplete="off" > Oregon Health Plan

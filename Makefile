@@ -26,6 +26,7 @@ source/credentials.ini:
 run:	env credentials
 	$(INVENV) cd source; python3 flask_main.py
 
+# Loader utility to push data into the database
 load:	env credentials
 	$(INVENV) cd source/utility; python3 loadDB.py < data.txt
 
