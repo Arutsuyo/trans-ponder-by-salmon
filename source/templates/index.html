@@ -153,19 +153,26 @@
 					var UN_CATEGORIES_URL = SCRIPT_ROOT + "/_unverifiedcategories";
 					var ALL_CATEGORIES_URL = SCRIPT_ROOT + "/_allcategories";
 
+					// Scrap the collection and generate the dropdown with the
+					// Verified categories
 					function populateCategories() {
 						$.getJSON(VE_CATEGORIES_URL, {}, function (data) {
 							var all_types = data.result.types;
 							console.log(all_types);
+							// Add the default option
 							var inner = "<option value=\"\" disabled selected hidden>Select resource type</option>";
 							for (var i = 0; i < all_types.length; i++) {
 								inner += "<option value=\"" + all_types[i] + "\">" + all_types[i] + "</option>";
 							}
+							// Add the unverified option
 							inner += "<option value=\"Unverified Resources\">Unverified Resources</option>";
+
+							// Set the innerHTML
 							$("#res_type")[0].innerHTML = inner;
 						});
 					}
 
+					// Trigger on load
 					$(document).ready(function () { populateCategories(); });
 				</script>
 			</div>

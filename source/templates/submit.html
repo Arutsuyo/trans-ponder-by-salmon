@@ -58,6 +58,7 @@ var CREATE_URL = SCRIPT_ROOT + "/_create";
 
 function add_resource() {
 	console.log("Adding a Resource");
+	// Scapr fields for info
 	var type						= $("#type").val();
 	var name						= $("#name").val();
 	var office_name					= $("#office_name").val();
@@ -81,6 +82,7 @@ function add_resource() {
 	paperwork_asks_for_pronoun = (paperwork_asks_for_pronoun == '' || paperwork_asks_for_pronoun == "no") ? false : paperwork_asks_for_pronoun;
 	can_monitor_hormones = (can_monitor_hormones == '' || can_monitor_hormones == "no") ? false : can_monitor_hormones;
 
+	// Push data to server
 	$.getJSON(CREATE_URL, {
 		"type": type,
 		"name" : name,

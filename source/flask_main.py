@@ -53,7 +53,7 @@ except:
 class User:
     def __init__(self, username, password, userType):
         self.username = username
-        self.password = password
+        self.password = password # Never storing the actual password, just a hash
         self.userType = userType
 
     # ***ONLY EVER CALL WHEN CHAINED AND USING generate_password_hash(pword) ***
@@ -259,6 +259,8 @@ def create():
         "verified": False
         }
 
+    # CHECK WITH SAM ABOUT THIS SECTION
+
     #collection.insert(new)
     ## Return to the resources:
     #resource_type = flask.request.args.get('res_type')
@@ -338,10 +340,21 @@ def verify():
     result = {"resources": get_unverified()}
     return flask.jsonify(result=result)
 
+
+@app.route("/_allcategories")
+def scrap_all_resource_list():
+    """
+    Scraps the collection to generate a list of all resource categories
+    """
+    all_types = collection.distinct( "type" )
+    result = {"types" : all_types}
+    print(result)
+    return flask.jsonify(result=result)
+
 @app.route("/_verifiedcategories")
 def scrap_verified_resource_list():
     """
-    Scraps the collection to generate a list of resource categories
+    Scraps the collection to generate a list of verified categories
     """
     all_types = collection.distinct( "type", { "verified" : True } )
     result = {"types" : all_types}
@@ -351,22 +364,13 @@ def scrap_verified_resource_list():
 @app.route("/_unverifiedcategories")
 def scrap_unverified_resource_list():
     """
-    Scraps the collection to generate a list of resource categories
+    Scraps the collection to generate a list of unverified categories
     """
     all_types = collection.distinct( "type", { "verified" : False } )
     result = {"types" : all_types}
     print(result)
     return flask.jsonify(result=result)
 
-@app.route("/_allcategories")
-def scrap_all_resource_list():
-    """
-    Scraps the collection to generate a list of resource categories
-    """
-    all_types = collection.distinct( "type" )
-    result = {"types" : all_types}
-    print(result)
-    return flask.jsonify(result=result)
 
 # Error page(s)
 @app.errorhandler(404)
