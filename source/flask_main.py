@@ -28,6 +28,8 @@ MONGO_CLIENT_URL = "mongodb://{}:{}@{}:{}/{}".format(
 if CONFIG.DEBUG is True:
     print("Using URL '{}'".format(MONGO_CLIENT_URL))
 
+password_for_volunteers = CONFIG.PASSWORD_FOR_VOLUNTEERS
+
 app = flask.Flask(__name__)
 app.secret_key = CONFIG.SECRET_KEY
 
@@ -101,7 +103,10 @@ def register_user():
     # Get User information
     username = flask.request.args.get('username', type=str)
     password = flask.request.args.get('password', type=str)
-    userType = flask.request.args.get('userType', type=str)
+    if flask.request.args.get('volunteer_pass', type=str) == password_for_volunteers:
+        userType = "volunteer"
+    else:
+        userType = "standard user"
 
     # Try and register user
     if User(username, generate_password_hash(password), userType).save_to_db():
@@ -120,7 +125,6 @@ def login_user():
     app.logger.debug("Checking Login")
     username = flask.request.args.get('username', type=str)
     password = flask.request.args.get('password', type=str)
-    userType = flask.request.args.get('userType', type=str)
 
     # See if user exists
     user = find_by_username(username)
@@ -128,6 +132,10 @@ def login_user():
         # Make sure hashes match the password (no passwords are ever saved)
         if check_password_hash(user.password, password):
             app.logger.debug("Correct Login")
+            if user.userType == "volunteer":
+                # This is a volunteer user, note that in the session
+                # variable so user has access to unverified resources.
+                flask.session["volunteer"] = True
             result = {'message': 'Password is correct'}
             return flask.jsonify(result=result)  # You'll want to return a token that verifies the user in the future
         else:
@@ -196,7 +204,7 @@ def disp():
 def create():
     app.logger.debug("Uploading new resource to db.")
     # Get resource contents from user.
-    category = flask.request.args.get('type')
+    type = flask.request.args.get('type')
     name = flask.request.args.get('name')
     office_name = flask.request.args.get('office_name')
     address = flask.request.args.get('address')
@@ -214,7 +222,7 @@ def create():
 
     # Add a new entry to the database with the contents submitted by the user.
     new = new = {
-        "category": category,
+        "type": type,
         "name": name,
         "office_name": office_name,
         "address": address,
@@ -270,8 +278,8 @@ def delete():
 # Get unverified resources.
 @app.route("/_unverified")
 def unverified():
-    # This page should only be accessible to volunteer
-    # users such that they can go through unverified
+    # Only accessible to volunteers users
+    # such that they can go through unverified
     # resources and mark them verified or delete
     # them as appropriate.
     result = {"resources": get_unverified()}
@@ -290,7 +298,7 @@ def verify():
     return flask.jsonify(result=result)
 
 
-# Error page(s).
+# Error page(s)
 @app.errorhandler(404)
 def page_not_found(error):
     app.logger.debug("Page not found")
@@ -367,7 +375,7 @@ def test():
     "notes": "",
     "can_monitor_hormones": True,
     "sliding_scale": "",
-    "name": "Rob Voorhees",
+    "name": "Rob Voorhees2",
     "email": "info@eugenecompletewellness.com",
     "phone": "541-653-9324",
     "type": "Chiropractor",
@@ -385,7 +393,7 @@ def test():
     "notes": "",
     "can_monitor_hormones": True,
     "sliding_scale": "",
-    "name": "Douglas Austin",
+    "name": "Douglas Austin2",
     "email": "",
     "phone": "541-683-1559",
     "type": "Chiropractor",
@@ -400,8 +408,8 @@ def test():
     # li = get_unverified()
     # for i in li:
     #     print(i)
-    verify_resource("Rob Voorhees")
-    verify_resource("Douglas Austin")
+    verify_resource("Rob Voorhees2")
+    verify_resource("Douglas Austin2")
     # print("TEST VERIFY")
     # li = get_unverified()
     # for i in li:
@@ -410,8 +418,8 @@ def test():
     # li = get_db_entries("Endocrinologist", False, True, False)
     # for i in li:
     #     print(i)
-    # del_resource("Rob Voorhees")
-    # del_resource("Douglas Austin")
+    del_resource("Rob Voorhees2")
+    del_resource("Douglas Austin2")
     # print("TEST: DELETED")
     # li = get_db_entries("Chiropractor", False, False, False)
     # for i in li:
