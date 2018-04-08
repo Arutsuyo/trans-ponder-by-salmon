@@ -128,7 +128,6 @@
 
         // Add the current resources to the table
         for (var i = 0; i < resources.length; i++) {
-            var cur_res_name = resources[i].name;
             // Put the resource in the table:
             resource_table.insertRow().outerHTML =
                 "<tr>" + resources[i].name + ", " + resources[i].type + "</tr>" +
@@ -151,14 +150,23 @@
 
             var remove_id = "#remove_" + i;
             var verify_id = "#verify_" + i;
-            $(remove_id).click(function () {
-              delete_res(cur_res_name);
-                });
-            $(verify_id).click(function () {
-              verify_res(cur_res_name);
-                });
-
+            make_del_listener(remove_id, resources[i].name);
+            make_verify_listener(verify_id, resources[i].name);
         }
+    }
+
+    function make_del_listener(btn, cur_res_name){
+        // A listener to attach to delete buttons.
+        $(btn).button().click(function(){
+            delete_res(cur_res_name);
+        });
+    }
+
+    function make_verify_listener(btn, cur_res_name){
+        // A listener to attach to delete buttons.
+        $(btn).button().click(function(){
+            verify_res(cur_res_name);
+        });
     }
 
 

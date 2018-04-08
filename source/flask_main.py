@@ -284,7 +284,7 @@ def delete():
         return flask.jsonify(result={"err": "err"})
     # Get the name of the resource to delete from user:
     res_name = flask.request.args.get('res_name')
-    app.logger.debug("Deleting resource", res_name)
+    app.logger.debug("Deleting resource")
     del_resource(res_name)
 
     # Return to the remaining unverified resources:
