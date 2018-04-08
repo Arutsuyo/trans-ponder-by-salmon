@@ -28,6 +28,9 @@ body{
 .dropdown-menu{
   margin-left: 150px;
 }
+h1{
+  font-family: 'Josefin Sans', sans-serif;
+}
 .container{
   display: inline-block;
   white-space:nowrap;
@@ -135,6 +138,9 @@ body{
   list-style: none;
   display: inline-block;
 }
+h1{
+
+}
 #r_contact{
   margin-left: 10px;
   margin-right: 10px;
@@ -192,4 +198,15 @@ h3{
 }
 ul{
   list-style: none;
+}
+#contact-info-submit{
+  display: inline-block;
+  width: 50%;
+}
+#perk-submit{
+  display: inline-block;
+  width: 50%;
+}
+#submit-form{
+  padding: 10px;
 }
