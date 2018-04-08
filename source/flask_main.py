@@ -173,15 +173,22 @@ def submit():
 # A function to display resources to the front end from the db.
 @app.route("/_disp")
 def disp():
-    # resource_type = flask.request.args.get('resource_type')
-    # filter_ohp = flask.request.args.get('filter_ohp', type=bool)
-    # filter_monitor_hormones = flask.request.args.get('filter_monitor_hormones', type=bool)
-    # filter_pvt_ins = flask.request.args.get('filter_pvt_ins', type=bool)
-    # app.logger.debug("Pulling resources of type: " + resource_type)
-    resource_type = 0  # TODO temp
-    filter_ohp, filter_monitor_hormones, filter_pvt_ins = False, False, False
-    result = {"resources": get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins)}
-    return flask.jsonify(result=result)
+    resource_type = flask.request.args.get('res_type')
+    filter_ohp = False
+    if flask.request.args.get('filter_ohp') == "True":
+        filter_ohp = True
+    filter_monitor_hormones = False
+    if flask.request.args.get('filter_monitor_hormones') == "True":
+        filter_monitor_hormones = True
+    filter_pvt_ins = False
+    if flask.request.args.get('filter_pvt_ins') == "True":
+        filter_pvt_ins = True
+    if resource_type:
+        app.logger.debug("Pulling resources of type: " + resource_type)
+        result = {"resources": get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins)}
+        return flask.jsonify(result=result)
+    else:
+        return flask.jsonify(dict())
 
 
 # Function to add a new resource to the db:
@@ -307,11 +314,11 @@ def get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pv
         del record['_id']
         if record["verified"] is False:
             matching_record = False
-        if filter_ohp and record["takes_OHP"] is not True:
+        if filter_ohp and not record["takes_OHP"]:
             matching_record = False
-        if filter_monitor_hormones and record["can_monitor_hormones"] is not True:
+        if filter_monitor_hormones and not record["can_monitor_hormones"]:
             matching_record = False
-        if filter_pvt_ins and record["takes_private_ins"] is not True:
+        if filter_pvt_ins and not record["takes_private_ins"]:
             matching_record = False
         if matching_record:
             records.append(record)
@@ -379,7 +386,7 @@ def test():
     "name": "Douglas Austin",
     "email": "",
     "phone": "541-683-1559",
-    "type": "Endocrinologist",
+    "type": "Chiropractor",
     "diversity_aware": "No.",
     "takes_private_ins": True,
     "takes_OHP": False,
@@ -388,29 +395,29 @@ def test():
            "verified": False}
     collection.insert(new)
 
-    li = get_unverified()
-    for i in li:
-        print(i)
+    # li = get_unverified()
+    # for i in li:
+    #     print(i)
     verify_resource("Rob Voorhees")
     verify_resource("Douglas Austin")
-    print("TEST VERIFY")
-    li = get_unverified()
-    for i in li:
-        print(i)
-    print("TEST GET Endocrinologist")
-    li = get_db_entries("Endocrinologist", False, True, False)
-    for i in li:
-        print(i)
-    del_resource("Rob Voorhees")
-    del_resource("Douglas Austin")
-    print("TEST: DELETED")
-    li = get_db_entries("Chiropractor", False, False, False)
-    for i in li:
-        print(i)
+    # print("TEST VERIFY")
+    # li = get_unverified()
+    # for i in li:
+    #     print(i)
+    # print("TEST GET Endocrinologist")
+    # li = get_db_entries("Endocrinologist", False, True, False)
+    # for i in li:
+    #     print(i)
+    # del_resource("Rob Voorhees")
+    # del_resource("Douglas Austin")
+    # print("TEST: DELETED")
+    # li = get_db_entries("Chiropractor", False, False, False)
+    # for i in li:
+    #     print(i)
 
 
 if __name__ == "__main__":
-    # test() #TODO ERASE
+    test() #TODO ERASE
     app.debug = CONFIG.DEBUG
     app.logger.setLevel(logging.DEBUG)
     app.run(port=CONFIG.PORT, host="localhost")
