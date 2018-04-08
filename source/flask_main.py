@@ -258,25 +258,41 @@ def create():
         "notes": notes,
         "verified": False
         }
-    collection.insert(new)
 
-    # Return to the resources:
-    resource_type = flask.request.args.get('res_type')
-    filter_ohp = False
-    if flask.request.args.get('filter_ohp') == "True":
-        filter_ohp = True
-    filter_monitor_hormones = False
-    if flask.request.args.get('filter_monitor_hormones') == "True":
-        filter_monitor_hormones = True
-    filter_pvt_ins = False
-    if flask.request.args.get('filter_pvt_ins') == "True":
-        filter_pvt_ins = True
-    if resource_type:
-        app.logger.debug("Pulling resources of type: " + resource_type)
-        result = {"resources": get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins)}
-        return flask.jsonify(result=result)
+    #collection.insert(new)
+    ## Return to the resources:
+    #resource_type = flask.request.args.get('res_type')
+    #filter_ohp = False
+    #if flask.request.args.get('filter_ohp') == "True":
+    #    filter_ohp = True
+    #filter_monitor_hormones = False
+    #if flask.request.args.get('filter_monitor_hormones') == "True":
+    #    filter_monitor_hormones = True
+    #filter_pvt_ins = False
+    #if flask.request.args.get('filter_pvt_ins') == "True":
+    #    filter_pvt_ins = True
+    #if resource_type:
+    #    app.logger.debug("Pulling resources of type: " + resource_type)
+    #    result = {"resources": get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins)}
+    #    return flask.jsonify(result=result)
+    #else:
+    #    return flask.jsonify(dict())
+    
+    if does_resource_exist(type, name):
+        result = {"error" : "Resource is already in the database"}
     else:
-        return flask.jsonify(dict())
+        res = collection.insert(new)
+        if hasattr(res, "writeConcernError"):
+            app.logger.debug(res["writeConcernError"])
+            result = {"error" : res["writeConcernError"]}
+        elif hasattr(res, "writeError"):
+            app.logger.debug(res["writeError"])
+            result = {"error" : res["writeError"]}
+        else:
+            app.logger.debug("Resource Created")
+            result = {"message" : "Resource created successfully"}
+            
+    return flask.jsonify(result=result)
 
 
 # Delete a resource
@@ -335,6 +351,17 @@ def page_not_found(error):
 ##############
 # Functions available to the page code above
 ##############
+
+def does_resource_exist(type, name):
+    """
+    Scraps the collection to see if the resource exists already
+    """
+    app.logger.debug("Finding resource: ", type, ", ", name)
+    for record in users_collection.find({"type": type, "name" : name}):
+        app.logger.debug(record)
+        return True
+    return False
+
 def get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins):
     """
     Returns all matching resources, in a form that
