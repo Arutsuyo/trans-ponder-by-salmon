@@ -338,6 +338,35 @@ def verify():
     result = {"resources": get_unverified()}
     return flask.jsonify(result=result)
 
+@app.route("/_verifiedcategories")
+def scrap_verified_resource_list():
+    """
+    Scraps the collection to generate a list of resource categories
+    """
+    all_types = collection.distinct( "type", { "verified" : True } )
+    result = {"types" : all_types}
+    print(result)
+    return flask.jsonify(result=result)
+
+@app.route("/_unverifiedcategories")
+def scrap_unverified_resource_list():
+    """
+    Scraps the collection to generate a list of resource categories
+    """
+    all_types = collection.distinct( "type", { "verified" : False } )
+    result = {"types" : all_types}
+    print(result)
+    return flask.jsonify(result=result)
+
+@app.route("/_allcategories")
+def scrap_all_resource_list():
+    """
+    Scraps the collection to generate a list of resource categories
+    """
+    all_types = collection.distinct( "type" )
+    result = {"types" : all_types}
+    print(result)
+    return flask.jsonify(result=result)
 
 # Error page(s)
 @app.errorhandler(404)
@@ -357,7 +386,7 @@ def does_resource_exist(type, name):
     Scraps the collection to see if the resource exists already
     """
     app.logger.debug("Finding resource: ", type, ", ", name)
-    for record in users_collection.find({"type": type, "name" : name}):
+    for record in collection.find({"type": type, "name" : name}):
         app.logger.debug(record)
         return True
     return False
