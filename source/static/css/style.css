@@ -1,6 +1,21 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  white-space: nowrap;
+  font-family: 'Josefin Sans', sans-serif;
+}
 body{
   background-color: white;
-  padding-bottom: 230px;
+  height: 100%;
+  padding-bottom: 190px;
+}
+#log-in-button{
+  float:right;
+}
+#log-in-form{
+  padding:5px;
+  display:inline-block;
+  float:right;
 }
 #tplogo{
   display: inline-block;
@@ -15,31 +30,39 @@ body{
 }
 #submit-button{
   float:right;
+  display:inline-block;
   margin: 1%;
 }
 .dropdown-menu{
   margin-left: 150px;
 }
 .container{
-  display:inline-block;
+  display: inline-block;
   white-space:nowrap;
-  width:58%;
+  width:60%;
   margin-left: 150px;
-  min-height: 400px;
+  margin-right: 1%;
+  min-height: 500px;
   background-color: #f9f6e3;
+  font-family: 'Lato', sans-serif;
 }
-
+#page-content-wrapper{
+  overflow: hidden;
+}
 #donation-box{
   display:inline-block;
-  float:right;
+  float: right;
   white-space:nowrap;
-  width:25%;
-  min-height: 400px;
-  margin-right: 2%;
-  background-color: #EEEEEE;
+  width: auto;
+  height: 100%;
+  margin-right: 3%;
+  margin-left: 1%;
+}
+#res_type{
+  margin-right: 20px;
 }
 .top-bar{
-  white-space:nowrap;
+  white-space: nowrap;
   float:top;
   position:fixed;
   background-color: white;
@@ -47,8 +70,7 @@ body{
   width: 100%;
   padding:10px;
   height: 55px;
-  padding-left: 200px;
-  padding-right: 5%;
+  padding-left: 170px;
 }
 #dropdown{
   margin-bottom: 5px;
@@ -64,6 +86,9 @@ body{
   float:right;
   display:inline-block;
   background-color: red;
+}
+#resource_table{
+    display:inline-block;
 }
 .resource{
   background-color: #EEEEEE;
@@ -127,17 +152,29 @@ body{
 }
 #contact{
   background-color: #313b48;
-  height: 170px;
+  color: white;
+  font-family: 'Josefin Sans', sans-serif;
+  height: 160px;
   width: 100%;
 }
 #bottom-bar{
   background-color: #28313d;
-  height: 60px;
+  color: #49515d;
+  height: 40px;
+  padding: 10px;
   width: 100%;
+  text-indent: 10px;
 }
 footer{
-  bottom:0;
-  height:230px;
-  position: absolute;
+  bottom: 0;
+  height:190px;
   width: 100%;
+}
+#contact-list{
+  padding: 30px;
+  align-content: center;
+  display: inline-block;
+}
+ul{
+  list-style: none;
 }

@@ -1,190 +1,188 @@
-﻿<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 
 <head>
     <title>Resource Directory</title>
-     <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <!-- 'viewport' is used by bootstrap to respond to device size -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Javascript:  JQuery from a content distribution network (CDN) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- Bootstrap includes javascript and css  (must follow jquery) -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/static/img/favicon.png">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
     </script>
 
     <!-- Our own style sheet -->
     <link rel="stylesheet" href="static/css/style.css" />
     <script type="text/javascript">
+    var SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    var CREATE_URL = SCRIPT_ROOT + "/_create";
+    var DEL_URL = SCRIPT_ROOT + "/_del";
+    var DISP_URL = SCRIPT_ROOT + "/_disp";
+    var UNVERIFIED_URL = SCRIPT_ROOT + "/_unverified";
 
-var SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-var CREATE_URL = SCRIPT_ROOT + "/_create";
-var DEL_URL = SCRIPT_ROOT + "/_del";
-var DISP_URL = SCRIPT_ROOT + "/_disp";
-
-function load_resources() {
-    var filter_ohp = "False";
-    var filter_pvt_ins = "False";
-    var filter_monitor_hormones = "False";
-    // A function to get resources from the db.
-    var res_type = document.getElementById('res_type').value;
-    var ohp_box = document.getElementById('ohp_box');
-    var pvt_ins_box = document.getElementById('pvt_ins_box');
-    var monitor_hormones_box = document.getElementById('monitor_hormones_box');
-    if (ohp_box.checked){
-        filter_ohp = "True";
-    }
-    if (pvt_ins_box.checked){
-        filter_pvt_ins = "True";
-    }
-    if (monitor_hormones_box.checked){
-        filter_monitor_hormones = "True";
-    }
-    console.log("Pulling resources of type: ", res_type);
-    $.getJSON(DISP_URL, {res_type: res_type, filter_ohp: filter_ohp,
-                        filter_pvt_ins: filter_pvt_ins,
-                        filter_monitor_hormones: filter_monitor_hormones},
-                        function(data) {
-        var retval = data.result;
-        if (retval){var resources = retval.resources}
-        if (resources) {
-            console.log("Found ", resources.length, " resources.");
-            show_me_the_resources(resources)
+    function load_resources() {
+        var filter_ohp = "False";
+        var filter_pvt_ins = "False";
+        var filter_monitor_hormones = "False";
+        // A function to get resources from the db.
+        var res_type = document.getElementById('res_type').value;
+        if (res_type == "Unverified Resources"){
+            return load_unverified_resources()
         }
-    });
-}
-
-function show_me_the_resources(recs){
-    var resources = recs;
-    var table = document.getElementById('resource_table');
-    // First, clear the old resource table. Uses some code from:
-    // https://stackoverflow.com/questions/3955229/remove-all-child-elements-of-a-dom-node-in-javascript
-    while (table.firstChild) {
-        table.removeChild(table.firstChild);
+        var ohp_box = document.getElementById('ohp_box');
+        var pvt_ins_box = document.getElementById('pvt_ins_box');
+        var monitor_hormones_box = document.getElementById('monitor_hormones_box');
+        if (ohp_box.checked){
+            filter_ohp = "True";
+        }
+        if (pvt_ins_box.checked){
+            filter_pvt_ins = "True";
+        }
+        if (monitor_hormones_box.checked){
+            filter_monitor_hormones = "True";
+        }
+        console.log("Pulling resources of type: ", res_type);
+        $.getJSON(DISP_URL, {res_type: res_type, filter_ohp: filter_ohp,
+                            filter_pvt_ins: filter_pvt_ins,
+                            filter_monitor_hormones: filter_monitor_hormones},
+                            function(data) {
+            var retval = data.result;
+            if (retval){var resources = retval.resources}
+            if (resources) {
+                console.log("Found ", resources.length, " resources.");
+                show_me_the_resources(resources)
+            }
+        });
     }
 
-    var resource_table = document.createElement('tbody');
-    table.appendChild(resource_table);
+    function load_unverified_resources(){
+        console.log("Pulling unverified resources");
+        $.getJSON(UNVERIFIED_URL, {}, function(data) {
+            var retval = data.result;
+            if (retval){
+                if (retval.err){
+                    disp_permission_error()
+                }
+            }else {
+                if (retval){var resources = retval.resources}
+                if (resources) {
+                    console.log("Found ", resources.length, " resources.");
+                    show_me_the_resources(resources)
+                }
+            }
+        });
+    }
 
-    // Add the current resources to the table
-    for (var i = 0; i < resources.length; i++) {
-        console.log(resources[i]);
+    function show_me_the_resources(recs){
+        var resources = recs;
+        var table = document.getElementById('resource_table');
+        // First, clear the old resource table. Uses some code from:
+        // https://stackoverflow.com/questions/3955229/remove-all-child-elements-of-a-dom-node-in-javascript
+        while (table.firstChild) {
+            table.removeChild(table.firstChild);
+        }
 
-        // Put the resource in the table:
+        var resource_table = document.createElement('tbody');
+        table.appendChild(resource_table);
+
+        // Add the current resources to the table
+        for (var i = 0; i < resources.length; i++) {
+            console.log(resources[i]);
+
+            // Put the resource in the table:
+            resource_table.insertRow().outerHTML =
+                "<tr>" + resources[i].name + ", " + resources[i].type + "</tr>" +
+                "<tr> Website: " + resources[i].website + "</tr>" +
+                "<tr> Paperwork for this provider allows choices beyond just m/f: "  + resources[i].paperwork_not_only_mf + "</tr>" +
+                "<tr> Paperwork for this provider asks for pronoun: " + resources[i].paperwork_asks_for_pronoun + "</tr>" +
+                "<tr> Additional notes for this provider: " + resources[i].notes + "</tr>" +
+                "<tr> Provider has capacity to monitor hormone levels: " + resources[i].can_monitor_hormones + "</tr>" +
+                "<tr> Provider uses a sliding scale for payment: " + resources[i].sliding_scale + "</tr>" +
+                "<tr> Provider email: " + resources[i].email + "</tr>" +
+                "<tr> Provider phone number: " + resources[i].phone + "</tr>" +
+                "<tr> Provider is diversity aware: " + resources[i].diversity_aware + "</tr>" +
+                "<tr> Provider takes private insurance: " + resources[i].takes_private_ins + "</tr>" +
+                "<tr> Provider takes OHP: " + resources[i].takes_OHP + "</tr>" +
+                "<tr> Office name, if applicable: " + resources[i].office_name + "</tr>" +
+                "<tr> Provider address: " + resources[i].address + "</tr>" +
+                    "<tr> <br /><br /><br /></tr>"
+
+        }
+    }
+
+    function disp_permission_error() {
+        var table = document.getElementById('resource_table');
+        while (table.firstChild) {
+            table.removeChild(table.firstChild);
+        }
+        var resource_table = document.createElement('tbody');
+        table.appendChild(resource_table);
         resource_table.insertRow().outerHTML =
-            "<tr>" + resources[i].name + ", " + resources[i].type + "</tr>" +
-            "<tr> Website: " + resources[i].website + "</tr>" +
-            "<tr> Paperwork for this provider allows choices beyond just m/f: "  + resources[i].paperwork_not_only_mf + "</tr>" +
-            "<tr> Paperwork for this provider asks for pronoun: " + resources[i].paperwork_asks_for_pronoun + "</tr>" +
-            "<tr> Additional notes for this provider: " + resources[i].notes + "</tr>" +
-            "<tr> Provider has capacity to monitor hormone levels: " + resources[i].can_monitor_hormones + "</tr>" +
-            "<tr> Provider uses a sliding scale for payment: " + resources[i].sliding_scale + "</tr>" +
-            "<tr> Provider email: " + resources[i].email + "</tr>" +
-            "<tr> Provider phone number: " + resources[i].phone + "</tr>" +
-            "<tr> Provider is diversity aware: " + resources[i].diversity_aware + "</tr>" +
-            "<tr> Provider takes private insurance: " + resources[i].takes_private_ins + "</tr>" +
-            "<tr> Provider takes OHP: " + resources[i].takes_OHP + "</tr>" +
-            "<tr> Office name, if applicable: " + resources[i].office_name + "</tr>" +
-            "<tr> Provider address: " + resources[i].address + "</tr>" +
-                "<tr> <br /><br /><br /></tr>"
-
+            "<tr>You must be a volunteer user to access and verify unverified resources!</tr>"
     }
-}
 
-function onPageLoad(){
-    // Display the resources already in the database.
-    console.log("Page loaded");
-    load_resources();
-}
+    function onPageLoad(){
+        // Display the resources already in the database.
+        console.log("Page loaded");
+        load_resources();
+    }
 
-$(document).on('change', 'input[type=checkbox]', function(e) {
-    load_resources();});
+    $(document).on('change', 'input[type=checkbox]', function(e) {
+        load_resources();});
 
-$(document).ready(function(){onPageLoad();});
+    $(document).ready(function(){onPageLoad();});
+    </script>
+</head>
+    <body>
+        <img id="tplogo" src="static/img/tplogo.png" height="90px" width="90px">
+        <div class="top-bar" id="sorting_options">
+            <!-- based on instructions from W3 Schools -->
+            <div id="dropdown">
+              <select id="res_type" onchange="load_resources()">
+                <option value="" disabled selected hidden>Select resource type</option>
+                <option value="Chiropractor">Chiropractor</option>
+                <option value="Endocrinologist">Endocrinologist</option>
+                <option value="Gender Affirming Products">Gender Affirming Products</option>
+                <option value="Gynecologist">Gynecologist</option>
+                <option value="Hair">Hair</option>
+                <option value="Laser / Electrolysis">Laser / Electrolysis</option>
+                <option value="Psychologist">Psychologist</option>
+                <option value="Social Support">Social Support</option>
+                <option value="Surgeon">Surgeon</option>
+                <option value="Surgery Scholarship">Surgery Scholarship</option>
+                <option value="Therapist / Counselor">Therapist / Counselor</option>
+                <option value="Voice Therapy">Voice Therapy</option>
+                <option value="Youth Support">Youth Support</option>
+                <option value="Unverified Resources">Unverified Resources</option>
+              </select>
+            </div>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+              <label class="btn btn-group	btn-default">
+                <input type="checkbox" name="options" id="ohp_box" autocomplete="off" > Oregon Health Plan
+              </label>
+              <label class="btn btn-group	 btn-default">
+                <input type="checkbox" name="options" id="pvt_ins_box" autocomplete="off"> Private Insurance
+              </label>
+              <label class="btn btn-group btn-default">
+                <input type="checkbox" name="options" id="monitor_hormones_box" autocomplete="off"> Monitors Hormones
+              </label>
+            </div>
 
-</script>
-<body>
-    <img id="tplogo" src="static/img/tplogo.png" height="90px" width="90px">
-    <div class = "top-bar" id="sorting_options">
-        <!-- based on instructions from W3 Schools -->
-        <div id="dropdown">
-
-<select id="res_type" onchange="load_resources()">
-  <option value="" disabled selected hidden>Select resource type</option>
-  <option value="Chiropractor">Chiropractor</option>
-  <option value="Endocrinologist">Endocrinologist</option>
-  <option value="Gender Affirming Products">Gender Affirming Products</option>
-  <option value="Gynecologist">Gynecologist</option>
-  <option value="Hair">Hair</option>
-  <option value="Laser / Electrolysis">Laser / Electrolysis</option>
-  <option value="Psychologist">Psychologist</option>
-  <option value="Social Support">Social Support</option>
-  <option value="Surgeon">Surgeon</option>
-  <option value="Surgery Scholarship">Surgery Scholarship</option>
-  <option value="Therapist / Counselor">Therapist / Counselor</option>
-  <option value="Voice Therapy">Voice Therapy</option>
-  <option value="Youth Support">Youth Support</option>
-</select>
-
-<!--
-            <button class="btn btn-warning btn-sm dropdown-toggle btn-group" type="button" data-toggle="dropdown">Service Type
-     <span class="caret"></span></button>
-            <ul class="dropdown-menu">
-                <li><a href="#">Chiropractor</a></li>
-                <li><a href="#">Endocrinologist</a></li>
-                <li><a href="#">Gender Affirming Products</a></li>
-                <li><a href="#">Gynecologist</a></li>
-                <li><a href="#">Hair</a></li>
-                <li><a href="#">Laser / Electrolysis</a></li>
-                <li><a href="#">Psychologist</a></li>
-                <li><a href="#">Social Support</a></li>
-                <li><a href="#">Surgeon</a></li>
-                <li><a href="#">Surgery Scholarship</a></li>
-                <li><a href="#">Therapist / Counselor</a></li>
-                <li><a href="#">Voice Therapy</a></li>
-                <li><a href="#">Youth Support</a></li>
-            </ul>
--->
-        </div>
-        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-          <label class="btn btn-group	btn-default">
-            <input type="checkbox" name="options" id="ohp_box" autocomplete="off" > Oregon Health Plan
-          </label>
-          <label class="btn btn-group	 btn-default">
-            <input type="checkbox" name="options" id="pvt_ins_box" autocomplete="off"> Private Insurance
-          </label>
-          <label class="btn btn-group btn-default">
-            <input type="checkbox" name="options" id="monitor_hormones_box" autocomplete="off"> Monitors Hormones
-          </label>
-        </div>
-        <a class="btn btn-default btn-xs" id = "submit-button" href="submit" role="button">Submit new Resource</a>
-        <form class="dropdown-menu p-4">
-          <div class="form-group">
-            <label for="exampleDropdownFormEmail2">Email address</label>
-            <input type="email" class="form-control" id="exampleDropdownFormEmail2" placeholder="email@example.com">
+            <a class="btn btn-warning btn-xs" id="submit-button" href="submit" role="button">Submit New Resource</a>
           </div>
-          <div class="form-group">
-            <label for="exampleDropdownFormPassword2">Password</label>
-            <input type="password" class="form-control" id="exampleDropdownFormPassword2" placeholder="Password">
-          </div>
-          <div class="form-check">
-            <input type="checkbox" class="form-check-input" id="dropdownCheck2">
-            <label class="form-check-label" for="dropdownCheck2">
-              Remember me
-            </label>
-          </div>
-          <button type="submit" class="btn btn-primary">Sign in</button>
-        </form>
-</div>
-    </div>
-
-    </div>
-    <div class="container">
-        <h2>Current Resources: </h2>
-        <!-- Table to be filled in by js functions -->
-        <table id="resource_table">
-            <tbody>
-                <template class="resource">
+        <div id = "page-content-wrapper">
+          <div class= "container">
+            <h2>Current Resources: </h2>
+            <!-- Table to be filled in by js functions -->
+            <table id="resource_table">
+                <tbody>
+                    <template class="resource">
                     <!-- <div class = "r_img_div"> <img src = "baa3.png" class = "r_image" width = "150" height = "150" > </div> -->
                     <div r_head>
                         <div id="r_titleDiv">
@@ -210,17 +208,34 @@ $(document).ready(function(){onPageLoad();});
                         <li id="r_takesInsurance">N</li>
                     </ul>
                 </template>
-            </tbody>
-        </table>
-        <br />
-    </div>
-    <div id = "donation-box">
-      PLACEHOLDER
-    </br></br></br>
-    </div>
-</body>
-<footer>
-    <div id="contact"></div>
-    <div id="bottom-bar"></div>
-</footer>
+                </tbody>
+            </table>
+            <br />
+        </div>
+          <div id= "donation-box">
+            </br>
+            </br>
+            </br>
+        </div>
+        </div>
+      </div>
+    </body>
+    <footer class="page-footer">
+        <div id="contact">
+          <ul id = "contact-list">
+          <li><span id = "Email-Header">Email</span>
+            admin@transponder.community
+          </li>
+
+          Phone
+          508-443-6337 (4GENDER)
+
+          Mailing Address
+          541 Willamette St #407a
+          Eugene, OR 97401
+        </div>
+        <div id="bottom-bar">
+          Team Salmon - Andi Nosler, Narayana Emery, Samuel Champer - Hack for a Cause 2018
+        </div>
+    </footer>
 </html>
