@@ -26,6 +26,8 @@ source/credentials.ini:
 run:	env credentials
 	$(INVENV) cd source; python3 flask_main.py
 
+load:	env credentials
+	$(INVENV) cd source/utility; python3 loadDB.py < data.txt
 
 test:	env
 	$(INVENV) cd meetings; nosetests

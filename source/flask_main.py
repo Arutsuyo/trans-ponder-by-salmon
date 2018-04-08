@@ -196,39 +196,41 @@ def disp():
 def create():
     app.logger.debug("Uploading new resource to db.")
     # Get resource contents from user.
-    website = flask.request.args.get('website')
-    paperwork_not_only_mf = flask.request.args.get('paperwork_not_only_mf', type=bool)
-    paperwork_asks_for_pronoun = flask.request.args.get('paperwork_asks_for_pronoun', type=bool)
-    notes = flask.request.args.get('notes')
-    can_monitor_hormones = flask.request.args.get('can_monitor_hormones', type=bool)
-    sliding_scale = flask.request.args.get('sliding_scale')
+    category = flask.request.args.get('type')
     name = flask.request.args.get('name')
-    email = flask.request.args.get('email')
-    phone = flask.request.args.get('phone')
-    type = flask.request.args.get('type')
-    diversity_aware = flask.request.args.get('diversity_aware')
-    takes_private_ins = flask.request.args.get('takes_private_ins', type=bool)
-    takes_ohp = flask.request.args.get('takes_OHP', type=bool)
     office_name = flask.request.args.get('office_name')
     address = flask.request.args.get('address')
+    phone = flask.request.args.get('phone')
+    email = flask.request.args.get('email')
+    website = flask.request.args.get('website')
+    takes_ohp = flask.request.args.get('takes_OHP', type=bool)
+    takes_private_ins = flask.request.args.get('takes_private_ins', type=bool)
+    sliding_scale = flask.request.args.get('sliding_scale')
+    diversity_aware = flask.request.args.get('diversity_aware')
+    paperwork_not_only_mf = flask.request.args.get('paperwork_not_only_mf', type=bool)
+    paperwork_asks_for_pronoun = flask.request.args.get('paperwork_asks_for_pronoun', type=bool)
+    can_monitor_hormones = flask.request.args.get('can_monitor_hormones', type=bool)
+    notes = flask.request.args.get('notes')
 
     # Add a new entry to the database with the contents submitted by the user.
-    new = {"website": website,
-           "paperwork_not_only_mf": paperwork_not_only_mf,
-           "paperwork_asks_for_pronoun": paperwork_asks_for_pronoun,
-           "notes": notes,
-           "can_monitor_hormones": can_monitor_hormones,
-           "sliding_scale": sliding_scale,
-           "name": name,
-           "email": email,
-           "phone": phone,
-           "type": type,
-           "diversity_aware": diversity_aware,
-           "takes_private_ins": takes_private_ins,
-           "takes_OHP": takes_ohp,
-           "office_name": office_name,
-           "address": address,
-           "verified": False}
+    new = new = {
+        "category": category,
+        "name": name,
+        "office_name": office_name,
+        "address": address,
+        "phone": phone,
+        "email": email,
+        "website": website,
+        "takes_OHP": takes_ohp,
+        "takes_private_ins": takes_private_ins,
+        "sliding_scale": sliding_scale,
+        "diversity_aware": diversity_aware,
+        "paperwork_not_only_mf": paperwork_not_only_mf,
+        "paperwork_asks_for_pronoun": paperwork_asks_for_pronoun,
+        "can_monitor_hormones": can_monitor_hormones,
+        "notes": notes,
+        "verified": False
+        }
     collection.insert(new)
 
     # Return to the resources:
