@@ -9,15 +9,12 @@ verified by users with appropriate privileges.
 import sys
 import logging
 import flask  # Web server tool.
-from werkzeug.security import generate_password_hash, check_password_hash # User authentication.
-
-
-import arrow  # For times and times.
+from werkzeug.security import generate_password_hash, check_password_hash  # User authentication.
 from pymongo import MongoClient  # Mongo database
 import config  # Get config settings from credentials file
 
 ####
-# App globals.
+# App globals:
 ###
 CONFIG = config.configuration()
 
@@ -36,7 +33,7 @@ app.secret_key = CONFIG.SECRET_KEY
 
 
 ####
-# Database connection per server process
+# Database connection per server process:
 ###
 try:
     dbclient = MongoClient(MONGO_CLIENT_URL)
@@ -49,7 +46,7 @@ except:
 
 
 ###
-# User Functionality
+# User account functionality:
 ###
 class User:
     def __init__(self, username, password, userType):
@@ -158,15 +155,20 @@ def index():
     app.logger.debug("Main page entry")
     return flask.render_template('index.html')
 
+
+# Route to log in to the page.
 @app.route("/login")
 def login():
     app.logger.debug("Login Page")
     return flask.render_template('login.html')
 
+
+# Route to submit a new resource.
 @app.route("/submit")
 def submit():
     app.logger.debug("Submission Page")
     return flask.render_template('submit.html')
+
 
 # A function to display resources to the front end from the db.
 @app.route("/_disp")
@@ -313,7 +315,7 @@ def get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pv
             matching_record = False
         if matching_record:
             records.append(record)
-    # Sort the records by arrow date:
+    # Sort the records by name:
     records.sort(key=lambda i: i['name'])
     return records
 
@@ -326,7 +328,7 @@ def get_unverified():
     for record in collection.find({"verified": False}):
         del record['_id']
         records.append(record)
-    # Sort the records by arrow date:
+    # Sort the records by name:
     records.sort(key=lambda i: i['name'])
     return records
 
@@ -349,7 +351,7 @@ def verify_resource(name):
 
 
 def test():
-    print("TESTING SOME FUNCTIONSSSSSSSSSSSSSSSs")
+    print("############ TESTING SOME FUNCTIONS ############")
     new = {"website": "http://www.eugenecompletewellness.com/",
     "paperwork_not_only_mf": "",
     "paperwork_asks_for_pronoun": "",
@@ -408,7 +410,7 @@ def test():
 
 
 if __name__ == "__main__":
-    test()
+    # test() #TODO ERASE
     app.debug = CONFIG.DEBUG
     app.logger.setLevel(logging.DEBUG)
     app.run(port=CONFIG.PORT, host="localhost")
