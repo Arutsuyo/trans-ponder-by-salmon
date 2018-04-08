@@ -1,5 +1,4 @@
 Flask
 gunicorn
 pymongo
-nose
 werkzeug
