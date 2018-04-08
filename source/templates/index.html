@@ -100,17 +100,22 @@
                     "<div id='r_titleDiv'>" +
                         "<h4 id='r_title'>" + resources[i].name +"</h4>" +
                     "</div>" +
-                    "<h4 id='r_category'>"+ resources[i].type +"</h4>" +
                     "</br>" +
                     "<div id='r_providerName'>" + resources[i].website + "</div>"+
+                    "<ul id='r_contactInfo'>" +
+                        "<li><b>Website:</b> <span id='r_url'></br>" + resources[i].website +"</span></li></br>" +
+                        "<li><b>Email:</b> <span id='r_email'></br>" + resources[i].email +"</span></li></br>" +
+                        "<li><b>Phone #:</b> <span id='r_phone'></br>"+ resources[i].phone +"</span></li></br>" +
+                        "<li><b>Address:</b> <span id='r_address'></br>" + resources[i].address + "</span></li></br>" +
+                        "<li><b>Office:</b> <span id='r_officeName'></br>" + resources[i].office_name +"</span></li>" +
+                    "</ul>" +
+                    "</br><div class = 'text-muted' id = 'r_perks'>" +
+                      "</br> Provider is diversity aware: " + resources[i].diversity_aware +
+                      "</br> Provider takes private insurance: " + resources[i].takes_private_ins  +
+                      "</br> Provider takes OHP: " + resources[i].takes_OHP +
+                      "</br> Office name: " + resources[i].office_name +
+                      "</div>"+
                 "</div>" +
-                "<ul id='r_contactInfo'>" +
-                    "<li><b>Website:</b> <span id='r_url'></br>" + resources[i].website +"</span></li></br>" +
-                    "<li><b>Email:</b> <span id='r_email'></br>" + resources[i].email +"</span></li></br>" +
-                    "<li><b>Phone #:</b> <span id='r_phone'></br>"+ resources[i].phone +"</span></li></br>" +
-                    "<li><b>Address:</b> <span id='r_address'></br>" + resources[i].address + "</span></li></br>" +
-                    "<li><b>Office:</b> <span id='r_officeName'></br>" + resources[i].office_name +"</span></li>" +
-                "</ul>" +
             "</div>";
 
             resource_table.insertRow().outerHTML = "</br>";
@@ -133,21 +138,31 @@
         // Add the current resources to the table
         for (var i = 0; i < resources.length; i++) {
             // Put the resource in the table:
-            resource_table.insertRow().outerHTML =
-                "<tr>" + resources[i].name + ", " + resources[i].type + "</tr>" +
-                "<tr> Website: " + resources[i].website + "</tr>" +
-                "<tr> Paperwork for this provider allows choices beyond just m/f: "  + resources[i].paperwork_not_only_mf + "</tr>" +
-                "<tr> Paperwork for this provider asks for pronoun: " + resources[i].paperwork_asks_for_pronoun + "</tr>" +
-                "<tr> Additional notes for this provider: " + resources[i].notes + "</tr>" +
-                "<tr> Provider has capacity to monitor hormone levels: " + resources[i].can_monitor_hormones + "</tr>" +
-                "<tr> Provider uses a sliding scale for payment: " + resources[i].sliding_scale + "</tr>" +
-                "<tr> Provider email: " + resources[i].email + "</tr>" +
-                "<tr> Provider phone number: " + resources[i].phone + "</tr>" +
-                "<tr> Provider is diversity aware: " + resources[i].diversity_aware + "</tr>" +
-                "<tr> Provider takes private insurance: " + resources[i].takes_private_ins + "</tr>" +
-                "<tr> Provider takes OHP: " + resources[i].takes_OHP + "</tr>" +
-                "<tr> Office name, if applicable: " + resources[i].office_name + "</tr>" +
-                "<tr> Provider address: " + resources[i].address + "</tr>" +
+            resource_table.insertRow().outerHTML
+              "<div class='uv-resource resource'>" +
+                "<div id = 'r_head'>" +
+                    "<div id='r_titleDiv'>" +
+                        "<h3 id='r_title'>" + resources[i].name +"</h3>" +
+                    "</div>" +
+                    "</br>" +
+                    "<div id='r_providerName'>" + resources[i].website + "</div>"+
+                    "<ul id='r_contactInfo'>" +
+                        "<li><b>Website:</b> <span id='r_url'></br>" + resources[i].website +"</span></li></br>" +
+                        "<li><b>Email:</b> <span id='r_email'></br>" + resources[i].email +"</span></li></br>" +
+                        "<li><b>Phone #:</b> <span id='r_phone'></br>"+ resources[i].phone +"</span></li></br>" +
+                        "<li><b>Address:</b> <span id='r_address'></br>" + resources[i].address + "</span></li></br>" +
+                        "<li><b>Office:</b> <span id='r_officeName'></br>" + resources[i].office_name +"</span></li>" +
+                        "<li>" +
+                          "</br><div class = 'text-muted' id = 'r_perks'>" +
+                            "</br> Provider is diversity aware: " + resources[i].diversity_aware +
+                            "</br> Provider takes private insurance: " + resources[i].takes_private_ins  +
+                            "</br> Provider takes OHP: " + resources[i].takes_OHP +
+                            "</br> Office name: " + resources[i].office_name +
+                            "</div>"+
+                        "</li>"+
+                    "</ul>" +
+                "</div>" +
+            "</div>"+
                      "<tr><input name='remove' id='remove_" + i + "' type='submit' value='Delete'/></tr>" +
                      "<tr><input name='verify' id='verify_"+ i + "' type='submit' value='Verify'/></tr>" +
                      "<tr> <br /><br /><br /></tr>"
@@ -313,12 +328,11 @@
                     <p>541 Willamette St #407a Eugene, OR 97401</p>
                 </li>
             </ul>
-
         </div>
         <div id="bottom-bar">
             Team Salmon - Andrea Nosler, Narayana Emery, Samuel Champer - Hack for a Cause 2018
+            <a class="btn btn-primary btn-xs" id="register-button" href="register" role="button">Register</a>
             <a class="btn btn-warning btn-xs" id="submit-button" href="submit" role="button">Submit New Resource</a>
-
         </div>
     </footer>
 </html>
