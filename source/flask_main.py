@@ -152,6 +152,8 @@ def login_user():
                 # This is a volunteer user, note that in the session
                 # variable so user has access to unverified resources.
                 flask.session["volunteer"] = True
+            else:
+                flask.session["volunteer"] = False
             result = {'message': 'Password is correct'}
             return flask.jsonify(result=result)  # You'll want to return a token that verifies the user in the future
         else:
@@ -176,6 +178,7 @@ def login_user():
 @app.route("/")
 @app.route("/index")
 def index():
+    flask.session["volunteer"] = False
     app.logger.debug("Main page entry")
     return flask.render_template('index.html')
 
@@ -237,7 +240,7 @@ def create():
     notes = flask.request.args.get('notes')
 
     # Add a new entry to the database with the contents submitted by the user.
-    new = new = {
+    new = {
         "type": type,
         "name": name,
         "office_name": office_name,
@@ -258,36 +261,37 @@ def create():
     collection.insert(new)
 
     # Return to the resources:
-    # resource_type = flask.request.args.get('resource_type')
-    # filter_ohp = flask.request.args.get('filter_ohp', type=bool)
-    # filter_monitor_hormones = flask.request.args.get('filter_monitor_hormones', type=bool)
-    # filter_pvt_ins = flask.request.args.get('filter_pvt_ins', type=bool)
-    # app.logger.debug("Pulling resources of type: " + resource_type)
-    filter_ohp, filter_monitor_hormones, filter_pvt_ins = False, False, False
-    resource_type = 0  #TODO temp
-    result = {"resources": get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins)}
-    return flask.jsonify(result=result)
+    resource_type = flask.request.args.get('res_type')
+    filter_ohp = False
+    if flask.request.args.get('filter_ohp') == "True":
+        filter_ohp = True
+    filter_monitor_hormones = False
+    if flask.request.args.get('filter_monitor_hormones') == "True":
+        filter_monitor_hormones = True
+    filter_pvt_ins = False
+    if flask.request.args.get('filter_pvt_ins') == "True":
+        filter_pvt_ins = True
+    if resource_type:
+        app.logger.debug("Pulling resources of type: " + resource_type)
+        result = {"resources": get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins)}
+        return flask.jsonify(result=result)
+    else:
+        return flask.jsonify(dict())
 
 
 # Delete a resource
 @app.route("/_del")
 def delete():
+    if not flask.session["volunteer"]:
+        # Only volunteers have access to this function.
+        return flask.jsonify(result={"err": "err"})
     # Get the name of the resource to delete from user:
     name = flask.request.args.get('name')
     app.logger.debug("Deleting resource")
     del_resource(name)
 
-    # Return to the remaining resources:
-
-    # resource_type = flask.request.args.get('resource_type')
-    # app.logger.debug("Pulling resources of type: " + resource_type)
-    # filter_ohp = flask.request.args.get('filter_ohp', type=bool)
-    # filter_monitor_hormones = flask.request.args.get('filter_monitor_hormones', type=bool)
-    # filter_pvt_ins = flask.request.args.get('filter_pvt_ins', type=bool)
-
-    filter_ohp, filter_monitor_hormones, filter_pvt_ins = False, False, False
-    resource_type = 0  #TODO temp
-    result = {"resources": get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins)}
+    # Return to the remaining unverified resources:
+    result = {"resources": get_unverified()}
     return flask.jsonify(result=result)
 
 
@@ -298,6 +302,8 @@ def unverified():
     # such that they can go through unverified
     # resources and mark them verified or delete
     # them as appropriate.
+    if not flask.session["volunteer"]:
+        return flask.jsonify(result={"err": "err"})
     result = {"resources": get_unverified()}
     return flask.jsonify(result=result)
 
@@ -305,6 +311,9 @@ def unverified():
 # verify a resource
 @app.route("/_verify")
 def verify():
+    if not flask.session["volunteer"]:
+        # Only volunteers have access to this function.
+        return flask.jsonify(result={err: "err"})
     # Get the name of the resource to verify from user input:
     name = flask.request.args.get('name')
     app.logger.debug("verifying resource")
@@ -340,11 +349,11 @@ def get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pv
         del record['_id']
         if record["verified"] is False:
             matching_record = False
-        if filter_ohp and not record["takes_OHP"]:
+        if filter_ohp and (not record["takes_OHP"] or record["takes_OHP"] != "Yes"):
             matching_record = False
-        if filter_monitor_hormones and not record["can_monitor_hormones"]:
+        if filter_monitor_hormones and (not record["can_monitor_hormones"] or record["can_monitor_hormones"] != "HRT" ):
             matching_record = False
-        if filter_pvt_ins and not record["takes_private_ins"]:
+        if filter_pvt_ins and (not record["takes_private_ins"] or record["takes_private_ins"] != "Yes"):
             matching_record = False
         if matching_record:
             records.append(record)
