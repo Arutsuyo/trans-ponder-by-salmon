@@ -158,6 +158,7 @@
 					function populateCategories() {
 						$.getJSON(VE_CATEGORIES_URL, {}, function (data) {
 							var all_types = data.result.types;
+							all_types.sort();
 							console.log(all_types);
 							// Add the default option
 							var inner = "<option value=\"\" disabled selected hidden>Select resource type</option>";

@@ -259,27 +259,6 @@ def create():
         "verified": False
         }
 
-    # CHECK WITH SAM ABOUT THIS SECTION
-
-    #collection.insert(new)
-    ## Return to the resources:
-    #resource_type = flask.request.args.get('res_type')
-    #filter_ohp = False
-    #if flask.request.args.get('filter_ohp') == "True":
-    #    filter_ohp = True
-    #filter_monitor_hormones = False
-    #if flask.request.args.get('filter_monitor_hormones') == "True":
-    #    filter_monitor_hormones = True
-    #filter_pvt_ins = False
-    #if flask.request.args.get('filter_pvt_ins') == "True":
-    #    filter_pvt_ins = True
-    #if resource_type:
-    #    app.logger.debug("Pulling resources of type: " + resource_type)
-    #    result = {"resources": get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pvt_ins)}
-    #    return flask.jsonify(result=result)
-    #else:
-    #    return flask.jsonify(dict())
-    
     if does_resource_exist(type, name):
         result = {"error" : "Resource is already in the database"}
     else:
