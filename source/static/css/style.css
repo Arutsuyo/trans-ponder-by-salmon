@@ -71,9 +71,6 @@ h1{
   margin-bottom: 5px;
   display: inline-block;
 }
-#log-in{
-  float:right;
-}
 .btn-group{
   display:inline-block;
 }
@@ -209,4 +206,17 @@ ul{
 }
 #submit-form{
   padding: 10px;
+}
+#log-in-container, #submit-container{
+  text-align: center;
+}
+
+#log-in{
+  text-align: left;
+  width: 50%;
+  margin:auto;
+  position: relative;
+  background-color: white;
+  padding: 30px;
+  border-radius: 20px;
 }

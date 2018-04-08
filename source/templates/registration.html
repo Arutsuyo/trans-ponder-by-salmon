@@ -1,114 +1,153 @@
+
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
+
 <head>
-	<title>User Registration</title>
-	<!-- 'viewport' is used by bootstrap to respond to device size -->
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!-- Javascript:  JQuery from a content distribution network (CDN) -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
-	</script>
-	<!-- Bootstrap includes javascript and css  (must follow jquery) -->
-	<link rel="stylesheet"
-		  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
-	</script>
-	<!-- Our own style sheet -->
-	<!--<link rel="stylesheet" href="/static/css/memos.css" />-->
+    <title>Resource Directory</title>
+    <meta charset="UTF-8">
+    <!-- 'viewport' is used by bootstrap to respond to device size -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Javascript:  JQuery from a content distribution network (CDN) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Bootstrap includes javascript and css  (must follow jquery) -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/static/img/favicon.png">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
+    </script>
+    <!-- Our own style sheet -->
+    <link rel="stylesheet" href="static/css/style.css" />
+    <script type="text/javascript">
+
+    var SCRIPT_ROOT = {{ request.script_root| tojson | safe }};
+    var REGISTER_URL = SCRIPT_ROOT + "/_register";
+    var CHECK_URL = SCRIPT_ROOT + "/_checkname";
+    var LOGIN_URL = SCRIPT_ROOT + "/_login";
+
+    function add_user() {
+    	console.log("Adding a User: ");
+    	var username = $('#username').val();
+    	var password = $('#password').val();
+    	var volunteer_pass = $('#volunteer_pass').val();
+    	console.log("User: ", username, password, volunteer_pass);
+    	$.getJSON(REGISTER_URL, {
+    		username: username,
+    		password: password,
+    		volunteer_pass: volunteer_pass
+    		}, function (data) {
+    			var res = data.result;
+    			console.log(res);
+    			if (res.error) {
+    				console.log(res.error);
+						alert(res.error);
+    			}
+    			else {
+    				console.log("User added")
+    				$('#username').val('');
+    				$('#password').val('');
+    				$('#volunteer_pass').val('');
+    				$('#message')[0].innerHTML = 'User Added successfully!';
+    				$('#goodname')[0].innerHTML = '';
+    				$('#goodnameul').hide();
+    				$('#spacer').removeAttr("hidden");
+    			}
+    	});
+    }
+
+    	function check_user() {
+    		var username = $('#username').val();
+    		console.log("User: ", username);
+    		$.getJSON(CHECK_URL, {
+    			username: username
+    		}, function (data) {
+    			var res = data.result;
+    			console.log(res);
+    			if (res) {
+    				console.log("Name Unavailable");
+    				$('#spacer').hide();
+    				$('#goodname')[0].innerHTML = 'Unavailable';
+    				$('#goodnameul').removeAttr("hidden");
+    			}
+    			else {
+    				console.log("Name Available")
+    				$('#spacer').hide();
+    				$('#goodname')[0].innerHTML = 'Available';
+    				$('#goodnameul').removeAttr("hidden");
+    			}
+    		});
+    }
+
+
+
+    $(document).ready(function () { onPageLoad(); });
+    function onPageLoad() {
+    	// Add a listener for the new memo button.
+    	console.log("Adding Button reg")
+    	$("#regButton").click(function () {
+    		console.log("reg clicked")
+    		add_user()
+    	});
+    	console.log("Adding change listener")
+    	$("#username").change(function () {
+    		check_user();
+    	});
+    }
+    </script>
 </head>
-<body>
-	<div class="container">
-		<h1>Enter Information:</h1>
-		<ul id="messageul" hidden>
-			<li id="message" />
-		</ul>
-		<br />
-		<input type="text" name="username" id="username" placeholder="(Username)" />
-		<ul id="goodnameul" hidden>
-			<li id="goodname">
-		</ul>
-		<br id="spacer"/>
-		<input type="text" name="password" id="password" placeholder="(Password)" />
-		<br />
-		<input type="text" name="volunteer_pass" id="volunteer_pass" placeholder="(optional)" />
-		<br />
-		<button class="submit" id="regButton">Register</button>
-		<script type="text/javascript">
-
-var SCRIPT_ROOT = {{ request.script_root| tojson | safe }};
-var REGISTER_URL = SCRIPT_ROOT + "/_register";
-var CHECK_URL = SCRIPT_ROOT + "/_checkname";
-var LOGIN_URL = SCRIPT_ROOT + "/_login";
-
-function add_user() {
-	console.log("Adding a User: ");
-	var username = $('#username').val();
-	var password = $('#password').val();
-	var volunteer_pass = $('#volunteer_pass').val();
-	console.log("User: ", username, password, volunteer_pass);
-	$.getJSON(REGISTER_URL, {
-		username: username,
-		password: password,
-		volunteer_pass: volunteer_pass
-		}, function (data) {
-			var res = data.result;
-			console.log(res);
-			if (res.error) {
-				console.log(res.error);
-				$('#message')[0].innerHTML = res.error;
-				$('#messageul').removeAttr("hidden");
-			}
-			else {
-				console.log("User added")
-				$('#username').val('');
-				$('#password').val('');
-				$('#volunteer_pass').val('');
-				$('#message')[0].innerHTML = 'User Added successfully!';
-				$('#goodname')[0].innerHTML = '';
-				$('#goodnameul').hide();
-				$('#spacer').removeAttr("hidden");
-			}
-	});
-}
-
-	function check_user() {
-		var username = $('#username').val();
-		console.log("User: ", username);
-		$.getJSON(CHECK_URL, {
-			username: username
-		}, function (data) {
-			var res = data.result;
-			console.log(res);
-			if (res) {
-				console.log("Name Unavailable");
-				$('#spacer').hide();
-				$('#goodname')[0].innerHTML = 'Unavailable';
-				$('#goodnameul').removeAttr("hidden");
-			}
-			else {
-				console.log("Name Available")
-				$('#spacer').hide();
-				$('#goodname')[0].innerHTML = 'Available';
-				$('#goodnameul').removeAttr("hidden");
-			}
-		});
-}
-
-
-
-$(document).ready(function () { onPageLoad(); });
-function onPageLoad() {
-	// Add a listener for the new memo button.
-	console.log("Adding Button reg")
-	$("#regButton").click(function () {
-		console.log("reg clicked")
-		add_user()
-	});
-	console.log("Adding change listener")
-	$("#username").change(function () {
-		check_user();
-	});
-}
-		</script>
-	</div>
-</body>
+    <body>
+        <img id="tplogo" src="static/img/tplogo.png" height="90px" width="90px">
+            <!-- based on instructions from W3 Schools -->
+        <div id = "page-content-wrapper">
+          <div class="container" id = "log-in-container">
+							<h1>Log In:</h1>
+							<ul id="messageul" hidden>
+								<li id="message" />
+							</ul>
+							<br />
+							<div id = "log-in">
+								Username
+								<input class = "form-control" type="text" name="username" id="username" placeholder="(Username)" />
+								<ul id="goodnameul" hidden>
+									<li id="goodname">
+								</ul>
+								<br id="spacer"/>
+								Password
+								<input class = "form-control" type="text" name="password" id="password" placeholder="(Password)" />
+								<br />
+								<input class = "form-control" type="text" name="volunteer_pass" id="volunteer_pass" placeholder="(optional)" />
+								<br />
+								<button class="submit btn btn-warning" id="regButton">Register</button>
+						</div>
+        </div>
+          <div id= "donation-box">
+            </br>
+            </br>
+            </br>
+        </div>
+        </div>
+      </div>
+    </body>
+    <footer class="page-footer">
+        <div id="contact">
+          <ul id = "contact-list">
+            <li>
+              <h3>Email</h3>
+              <p>admin@transponder.community</p>
+            </li>
+            <li>
+              <h3>Phone</h3>
+              <p>508-443-6337 (4GENDER)</p>
+            </li>
+            <li>
+              <h3>Mailing Address</h3>
+              <p>541 Willamette St #407a
+              Eugene, OR 97401</p>
+            </li>
+        	</ul>
+        </div>
+        <div id="bottom-bar">
+          Team Salmon - Andrea Nosler, Narayana Emery, Samuel Champer - Hack for a Cause 2018
+        </div>
+    </footer>
 </html>
