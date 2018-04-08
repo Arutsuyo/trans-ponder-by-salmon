@@ -60,7 +60,7 @@ class User:
     # such as: User(username, generate_password_hash(password), userType).save_to_db()
     # This means no passwords are ever saved in the database, only the hashs of the passwords
     def save_to_db(self):
-        app.logger.debug("Checking is User exists")
+        app.logger.debug("Checking if user exists")
         if find_by_username(self.username):
             app.logger.debug("User Already Exists")
             return False
@@ -72,18 +72,15 @@ class User:
                 "userType": self.userType,
             }
             res = users_collection.insert(new)
-            if res["nInserted"] > 0:
-                app.logger.debug("Created")
-                return True
-            elif hasattr(res, "writeConcernError"):
+            if hasattr(res, "writeConcernError"):
                 app.logger.debug(res["writeConcernError"])
                 return False
             elif hasattr(res, "writeError"):
                 app.logger.debug(res["writeError"])
                 return False
             else:
-                app.logger.debug("Unknown insertion error")
-                return False
+                app.logger.debug("Created")
+                return True
                 # end save_to_db
 
 
@@ -103,6 +100,11 @@ def register_user():
     # Get User information
     username = flask.request.args.get('username', type=str)
     password = flask.request.args.get('password', type=str)
+
+    if username == '' or password == '':
+        result = {'error' : 'Username or password was blank'}
+        return flask.jsonify(result=result)
+
     if flask.request.args.get('volunteer_pass', type=str) == password_for_volunteers:
         userType = "volunteer"
     else:
@@ -111,13 +113,27 @@ def register_user():
     # Try and register user
     if User(username, generate_password_hash(password), userType).save_to_db():
         app.logger.debug("Registration Successful")
-        result = {'message': 'User registered successfully'}
+        result = {'message': 'User registered successfully as ' + userType}
         return flask.jsonify(result=result)
     else:
         # If failed, See errors possible in save_to_db()
         app.logger.debug("Failed Registration")
         result = {'error': "User failed"}
         return flask.jsonify(result=result)
+
+@app.route('/_checkname')
+def check_user_name():
+    app.logger.debug("Checking Name Availability")
+    # Get User information
+    username = flask.request.args.get('username', type=str)
+
+    if find_by_username(username):
+        app.logger.debug("User Exists")
+        return flask.jsonify(result=True)
+    else:
+        app.logger.debug("User does not exist")
+        return flask.jsonify(result=False)
+
 
 
 @app.route('/_login')

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-	<title>User Sign-in</title>
+	<title>User Registration</title>
 	<!-- 'viewport' is used by bootstrap to respond to device size -->
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- Javascript:  JQuery from a content distribution network (CDN) -->
@@ -13,72 +13,77 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
 	</script>
 	<!-- Our own style sheet -->
-	<link rel="stylesheet" href="/static/css/memos.css" />
+	<!--<link rel="stylesheet" href="/static/css/memos.css" />-->
 </head>
 <body>
 	<div class="container">
-			<h1>Username / Password testing: </h1>
-			<div class="col-md-6">
-				<input type="text" name="username" id="username" value="tester1" />
-				<br />
-				<input type="text" name="password" id="password" value="tester1" />
-				<br />
-			</div> <!-- columns 5-10 -->
-			<div class="col-md-6">
-				<button class="submit" id="regButton">Register</button>
-				<br />
-				<button class="submit" id="logButton">Login</button>
-			</div>
+		<h1>Enter Information:</h1>
+			<ul>
+				<li id="message" hidden/>
+			</ul>
+			<br />
+			<input type="text" name="username" id="username" placeholder="(Username)" />
+			<ul>
+				<li id="goodname" hidden>
+			</ul>
+			<input type="text" name="password" id="password" placeholder="(Password)" />
+			<br />
+			<input type="text" name="volunteer_pass" id="volunteer_pass" placeholder="(optional)" />
+			<br />
+			<button class="submit" id="regButton">Register</button>
 		<script type="text/javascript">
 
 var SCRIPT_ROOT = {{ request.script_root| tojson | safe }};
 var REGISTER_URL = SCRIPT_ROOT + "/_register";
+var CHECK_URL = SCRIPT_ROOT + "/_checkname";
 var LOGIN_URL = SCRIPT_ROOT + "/_login";
 
 function add_user() {
 	console.log("Adding a User: ");
 	var username = $('#username').val();
 	var password = $('#password').val();
-	var userType = "Volunteer";
-	console.log("User: ", username, password, userType);
+	var volunteer_pass = $('#volunteer_pass').val();
+	console.log("User: ", username, password, volunteer_pass);
 	$.getJSON(REGISTER_URL, {
 		username: username,
 		password: password,
-		userType: userType
+		volunteer_pass: volunteer_pass
 		}, function (data) {
 			var res = data.result;
 			console.log(res);
 			if (res.error) {
 				console.log(res.error);
+				$('#message')[0].innerHTML = res.error;
+				$('#message').removeAttr("hidden");
 			}
 			else {
 				console.log("User added")
 				$('#username').val('');
 				$('#password').val('');
+				$('#volunteer_pass').val('');
+				$('#message')[0].innerHTML = '';
+				$('#goodname')[0].innerHTML = '';
 			}
 	});
 }
 
 	function check_user() {
-		console.log("Checking a User: ");
 		var username = $('#username').val();
-		var password = $('#password').val();
-		var userType = "Volunteer";
-		console.log("User: ", username, password, userType);
-		$.getJSON(LOGIN_URL, {
-			username: username,
-			password: password,
-			userType: userType
+		console.log("User: ", username);
+		$.getJSON(CHECK_URL, {
+			username: username
 		}, function (data) {
 			var res = data.result;
 			console.log(res);
-			if (res.error) {
-				console.log(res.error);
+			if (res) {
+				console.log("Name Unavailable");
+				$('#goodname')[0].innerHTML = 'Unavailable';
+				$('#goodname').removeAttr("hidden");
 			}
 			else {
-				console.log("Login Successful")
-				$('#username').val('');
-				$('#password').val('');
+				console.log("Name Available")
+				$('#goodname')[0].innerHTML = 'Available';
+				$('#goodname').removeAttr("hidden");
 			}
 		});
 }
@@ -93,10 +98,9 @@ function onPageLoad() {
 		console.log("reg clicked")
 		add_user()
 	});
-	console.log("Adding button log")
-	$("#logButton").click(function () {
-		console.log("Log Clicked")
-		check_user()
+	console.log("Adding change listener")
+	$("#username").change(function () {
+		check_user();
 	});
 }
 		</script>
