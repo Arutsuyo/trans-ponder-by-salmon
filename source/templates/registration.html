@@ -1,9 +1,9 @@
-
+﻿
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 
 <head>
-    <title>Resource Directory</title>
+    <title>Register User</title>
     <meta charset="UTF-8">
     <!-- 'viewport' is used by bootstrap to respond to device size -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -24,6 +24,14 @@
     var REGISTER_URL = SCRIPT_ROOT + "/_register";
     var CHECK_URL = SCRIPT_ROOT + "/_checkname";
     var LOGIN_URL = SCRIPT_ROOT + "/_login";
+
+	var delay = (function () {
+		var timer = 0;
+		return function (callback, ms) {
+			clearTimeout(timer);
+			timer = setTimeout(callback, ms);
+		};
+	})();
 
     function add_user() {
     	console.log("Adding a User: ");
@@ -47,7 +55,11 @@
     				$('#username').val('');
     				$('#password').val('');
     				$('#volunteer_pass').val('');
-					 alert('User Added successfully!');
+					alert('User Added successfully!');
+
+					delay(function () {
+						window.location.replace("/")
+					}, 5000); // end delay
     			}
     	});
     }
