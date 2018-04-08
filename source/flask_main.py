@@ -178,7 +178,7 @@ def login_user():
 @app.route("/")
 @app.route("/index")
 def index():
-    flask.session["volunteer"] = True
+    flask.session["volunteer"] = False
     app.logger.debug("Main page entry")
     return flask.render_template('index.html')
 
@@ -216,13 +216,6 @@ def disp():
         return flask.jsonify(result=result)
     else:
         return flask.jsonify(dict())
-
-def interp_bool(boolesque_string):
-    if boolesque_string == "yes":
-        return True
-    if boolesque_string == "N/A":
-        return boolesque_string
-    return False
 
 # Function to add a new resource to the db:
 @app.route("/_create")
@@ -437,6 +430,14 @@ def verify_resource(name):
     # for record in collection.find({"name": name}):
     collection.update_one({"name": name},
                           {"$set": {"verified": True}})
+
+    
+def interp_bool(boolesque_string):
+    if boolesque_string == "yes":
+        return True
+    if boolesque_string == "N/A":
+        return boolesque_string
+    return False
 
 
 def test():
