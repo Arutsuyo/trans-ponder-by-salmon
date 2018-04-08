@@ -283,9 +283,9 @@ def delete():
         # Only volunteers have access to this function.
         return flask.jsonify(result={"err": "err"})
     # Get the name of the resource to delete from user:
-    name = flask.request.args.get('name')
-    app.logger.debug("Deleting resource")
-    del_resource(name)
+    res_name = flask.request.args.get('res_name')
+    app.logger.debug("Deleting resource", res_name)
+    del_resource(res_name)
 
     # Return to the remaining unverified resources:
     result = {"resources": get_unverified()}
@@ -312,9 +312,9 @@ def verify():
         # Only volunteers have access to this function.
         return flask.jsonify(result={err: "err"})
     # Get the name of the resource to verify from user input:
-    name = flask.request.args.get('name')
+    res_name = flask.request.args.get('res_name')
     app.logger.debug("verifying resource")
-    verify_resource(name)
+    verify_resource(res_name)
     # Return to the remaining unverified resources:
     result = {"resources": get_unverified()}
     return flask.jsonify(result=result)
@@ -388,11 +388,14 @@ def get_db_entries(resource_type, filter_ohp, filter_monitor_hormones, filter_pv
         del record['_id']
         if record["verified"] is False:
             matching_record = False
-        if filter_ohp and (not record["takes_OHP"] or record["takes_OHP"] != "Yes"):
+        # if filter_ohp and (not record["takes_OHP"] or record["takes_OHP"] != "Yes"):
+        # if filter_monitor_hormones and (not record["can_monitor_hormones"] or record["can_monitor_hormones"] != "HRT" ):
+        # if filter_pvt_ins and (not record["takes_private_ins"] or record["takes_private_ins"] != "Yes"):
+        if filter_ohp and not record["takes_OHP"]:
             matching_record = False
-        if filter_monitor_hormones and (not record["can_monitor_hormones"] or record["can_monitor_hormones"] != "HRT" ):
+        if filter_monitor_hormones and not record["can_monitor_hormones"]:
             matching_record = False
-        if filter_pvt_ins and (not record["takes_private_ins"] or record["takes_private_ins"] != "Yes"):
+        if filter_pvt_ins and not record["takes_private_ins"]:
             matching_record = False
         if matching_record:
             records.append(record)
