@@ -247,84 +247,62 @@
 					$(document).ready(function () { populateCategories(); });
 				</script>
 			</div>
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-              <label class="btn btn-group	btn-default">
-                <input type="checkbox" name="options" id="ohp_box" autocomplete="off" > Oregon Health Plan
-              </label>
-              <label class="btn btn-group	 btn-default">
-                <input type="checkbox" name="options" id="pvt_ins_box" autocomplete="off"> Private Insurance
-              </label>
-              <label class="btn btn-group btn-default">
-                <input type="checkbox" name="options" id="monitor_hormones_box" autocomplete="off"> Monitors Hormones
-              </label>
+        <div class="btn-group btn-group-toggle" id="toggle-buttons" data-toggle="buttons">
+            <label class="btn btn-group	btn-default">
+                  <input type="checkbox" name="options" id="ohp_box" autocomplete="off" > Oregon Health Plan
+                </label>
+            <label class="btn btn-group	 btn-default">
+                  <input type="checkbox" name="options" id="pvt_ins_box" autocomplete="off"> Private Insurance
+                </label>
+            <label class="btn btn-group btn-default">
+                  <input type="checkbox" name="options" id="monitor_hormones_box" autocomplete="off"> Monitors Hormones
+                </label>
+        </div>
+        <form class="form-inline" id="log-in-container-container">
+            <div class="form-group">
+                <label for="inputPassword2" class="sr-only">Username</label>
+                <input type="username" class="input-sm form-control" id="login-username" placeholder="Username">
             </div>
-
-            <a class="btn btn-warning btn-xs" id="submit-button" href="submit" role="button">Submit New Resource</a>
-          </div>
-        <div id = "page-content-wrapper">
-          <div class= "container">
-            <h2>Current Resources: </h2>
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="inputPassword2" class="sr-only">Password</label>
+                <input type="password" class="input-sm form-control" id="login-password" placeholder="Password">
+            </div>
+            <button type="submit" class="btn btn-warning btn-sm">Log In</button>
+        </form>
+    </div>
+    <div id="page-content-wrapper">
+        <div class="container">
+            <h2>Resources: </h2>
             <!-- Table to be filled in by js functions -->
             <table id="resource_table">
-                <tbody>
-                    <template class="resource">
-                    <!-- <div class = "r_img_div"> <img src = "baa3.png" class = "r_image" width = "150" height = "150" > </div> -->
-                    <div r_head>
-                        <div id="r_titleDiv">
-                            <h3 id="r_title">PLACEHOLDER TITLE</h3>
-                        </div>
-                        <h4 id="r_category">Category</h4>
-                        </br>
-                        <div id="r_providerName">ProviderName</div>
-                    </div>
-                    <ul id="r_contactInfo">
-                        <li><b>Website:</b> <span id="r_url">N/A</span></li>
-                        <li><b>Email:</b> <span id="r_email">N/A</span></li>
-                        <li><b>Phone #:</b> <span id="r_phone">N/A</span></li>
-                        <li><b>Address:</b> <span id="r_address">N/A</span></li>
-                        <li><b>Office:</b> <span id="r_officeName">N/A</span></li>
-                    </ul>
-                    <ul id="r_perks">
-                        <li id="r_takesOHP">N</li>
-                        <li id="r_takesInsurance">N</li>
-                        <li id="r_takesInsurance">N</li>
-                        <li id="r_takesInsurance">N</li>
-                        <li id="r_takesInsurance">N</li>
-                    </ul>
-                </template>
-                </tbody>
             </table>
             <br />
         </div>
-          <div id= "donation-box">
-            </br>
-            </br>
-            </br>
+        <div id="donation-box">
         </div>
-        </div>
-      </div>
-    </body>
+    </div>
     <footer class="page-footer">
         <div id="contact">
-          <ul id = "contact-list">
-            <li>
-              <h3>Email</h3>
-              <p>admin@transponder.community</p>
-            </li>
-            <li>
-              <h3>Phone</h3>
-              <p>508-443-6337 (4GENDER)</p>
-            </li>
-            <li>
-              <h3>Mailing Address</h3>
-              <p>541 Willamette St #407a
-              Eugene, OR 97401</p>
-            </li>
-          </dd>
-        </ul>
+            <ul id="contact-list">
+                <li id="c-Email">
+                    <h3>Email</h3>
+                    <p>admin@transponder.community</p>
+                </li>
+                <li id="c-Phone">
+                    <h3>Phone</h3>
+                    <p>508-443-6337 (4GENDER)</p>
+                </li>
+                <li id="c-Address">
+                    <h3>Mailing Address</h3>
+                    <p>541 Willamette St #407a Eugene, OR 97401</p>
+                </li>
+            </ul>
+
         </div>
         <div id="bottom-bar">
-          Team Salmon - Andrea Nosler, Narayana Emery, Samuel Champer - Hack for a Cause 2018
+            Team Salmon - Andrea Nosler, Narayana Emery, Samuel Champer - Hack for a Cause 2018
+            <a class="btn btn-warning btn-xs" id="submit-button" href="submit" role="button">Submit New Resource</a>
+
         </div>
     </footer>
 </html>
