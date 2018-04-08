@@ -33,49 +33,13 @@
 		var phone = $("#phone").val();
 		var email = $("#email").val();
 		var website = $("#website").val();
-
 		var takes_OHP = $('input[name=OHP]:checked').val();
-		if (takes_OHP == "yes")
-			takes_OHP = true;
-		else if (takes_OHP == "no")
-			takes_OHP = false;
-
 		var takes_private_ins = $('input[name=prv_ins]:checked').val();
-		if (takes_private_ins == "yes")
-			takes_private_ins = true;
-		else if (takes_private_ins == "no")
-			takes_private_ins = false;
-
 		var sliding_scale = $('input[name=slide_scale]:checked').val();
-		if (sliding_scale == "yes")
-			sliding_scale = true;
-		else if (sliding_scale == "no")
-			sliding_scale = false;
-
 		var diversity_aware = $('input[name=diversity]:checked').val();
-		if (diversity_aware == "yes")
-			diversity_aware = true;
-		else if (diversity_aware == "no")
-			diversity_aware = false;
-
 		var paperwork_not_only_mf = $('input[name=only_mf]:checked').val();
-		if (paperwork_not_only_mf == "yes")
-			paperwork_not_only_mf = true;
-		else if (paperwork_not_only_mf == "no")
-			paperwork_not_only_mf = false;
-
 		var paperwork_asks_for_pronoun = $('input[name=pronoun]:checked').val();
-		if (paperwork_asks_for_pronoun == "yes")
-			paperwork_asks_for_pronoun = true;
-		else if (paperwork_asks_for_pronoun == "no")
-			paperwork_asks_for_pronoun = false;
-
 		var can_monitor_hormones = $('input[name=hormones]:checked').val();
-		if (can_monitor_hormones == "yes")
-			can_monitor_hormones = true;
-		else if (can_monitor_hormones == "no")
-			can_monitor_hormones = false;
-
 		var notes = $('#notes').val();
 		
     	// Push data to server
