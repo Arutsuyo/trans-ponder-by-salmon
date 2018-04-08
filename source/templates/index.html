@@ -99,24 +99,20 @@
             // Put the resource in the table:
             resource_table.insertRow().outerHTML =
               "<div class='resource'>" +
-                "<div r_head>" +
+                "<div id = 'r_head'>" +
                     "<div id='r_titleDiv'>" +
-                        "<h3 id='r_title'>" + resources[i].name +"</h3>" +
+                        "<h4 id='r_title'>" + resources[i].name +"</h4>" +
                     "</div>" +
                     "<h4 id='r_category'>"+ resources[i].type +"</h4>" +
                     "</br>" +
                     "<div id='r_providerName'>" + resources[i].website + "</div>"+
                 "</div>" +
                 "<ul id='r_contactInfo'>" +
-                    "<li><b>Website:</b> <span id='r_url'>" + resources[i].website +"</span></li>" +
-                    "<li><b>Email:</b> <span id='r_email'>" + resources[i].email +"</span></li>" +
-                    "<li><b>Phone #:</b> <span id='r_phone'>"+ resources[i].phone +"</span></li>" +
-                    "<li><b>Address:</b> <span id='r_address'>" + resources[i].address + "</span></li>" +
-                    "<li><b>Office:</b> <span id='r_officeName'>" + resources[i].office_name +"</span></li>" +
-                "</ul>" +
-                "<ul id='r_perks'>" +
-                    "<li id='r_takesOHP'>" + resources[i].takes_OHP +"</li>" +
-                    "<li id='r_takesInsurance'>" + resources[i].takes_private_ins + "</li>" +
+                    "<li><b>Website:</b> <span id='r_url'></br>" + resources[i].website +"</span></li></br>" +
+                    "<li><b>Email:</b> <span id='r_email'></br>" + resources[i].email +"</span></li></br>" +
+                    "<li><b>Phone #:</b> <span id='r_phone'></br>"+ resources[i].phone +"</span></li></br>" +
+                    "<li><b>Address:</b> <span id='r_address'></br>" + resources[i].address + "</span></li></br>" +
+                    "<li><b>Office:</b> <span id='r_officeName'></br>" + resources[i].office_name +"</span></li>" +
                 "</ul>" +
             "</div>";
 

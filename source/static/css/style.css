@@ -85,18 +85,28 @@ body{
 .resource{
   background-color: #EEEEEE;
   border-radius: 10px;
-  padding: 15px;
+  padding: 10px;
 }
 #r_head{
   display: inline-block;
   background-color: #00FF66;
-  margin: 10px;
+  margin: 5px;
 }
 #r_img_div{
   display: inline-block;
   margin: 5px;
   float:left;
   border-radius: 10px;
+}
+#r_contactInfo{
+  disply:inline-block;
+  width: 50%;
+  background-color: red;
+}
+#r_perks{
+  display: inline-block;
+  width: auto%;
+  background-color: blue;
 }
 #r_image{
   border-radius: 10px;
@@ -108,7 +118,6 @@ body{
 }
 #r_titleDiv{
   display: inline-block;
-  margin-left: 10px;
 }
 #r_providerName{
   display: inline-block;
@@ -118,15 +127,13 @@ body{
 }
 #r_contactInfo{
   list-style: none;
-  margin-left: 30px;
+  width: 100%;
   display: inline-block;
 }
 #r_perks{
   float: right;
-  margin-right: 30px;
   list-style: none;
   display: inline-block;
-  margin-right: 10px;
 }
 #r_contact{
   margin-left: 10px;
