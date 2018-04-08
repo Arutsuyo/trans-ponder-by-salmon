@@ -184,10 +184,10 @@ def index():
 
 
 # Route to log in to the page.
-@app.route("/login")
-def login():
-    app.logger.debug("Login Page")
-    return flask.render_template('login.html')
+@app.route("/register")
+def register():
+    app.logger.debug("registration Page")
+    return flask.render_template('registration.html')
 
 
 # Route to submit a new resource.
