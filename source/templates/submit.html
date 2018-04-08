@@ -1,24 +1,24 @@
-
+﻿
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 
 <head>
-    <title>Resource Directory</title>
-    <meta charset="UTF-8">
-    <!-- 'viewport' is used by bootstrap to respond to device size -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Javascript:  JQuery from a content distribution network (CDN) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <!-- Bootstrap includes javascript and css  (must follow jquery) -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
-    <link rel="icon" type="image/png" href="/static/img/favicon.png">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
-    </script>
-    <!-- Our own style sheet -->
-    <link rel="stylesheet" href="static/css/style.css" />
-    <script type="text/javascript">
+	<title>Resource Directory</title>
+	<meta charset="UTF-8">
+	<!-- 'viewport' is used by bootstrap to respond to device size -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- Javascript:  JQuery from a content distribution network (CDN) -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<!-- Bootstrap includes javascript and css  (must follow jquery) -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+	<link rel="icon" type="image/png" href="/static/img/favicon.png">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
+	</script>
+	<!-- Our own style sheet -->
+	<link rel="stylesheet" href="static/css/style.css" />
+	<script type="text/javascript">
 
     var SCRIPT_ROOT = {{ request.script_root| tojson | safe }};
     var CREATE_URL = SCRIPT_ROOT + "/_create";
@@ -26,29 +26,64 @@
     function add_resource() {
     	console.log("Adding a Resource");
     	// Scapr fields for info
-    	var type						= $("#type").val();
-    	var name						= $("#name").val();
-    	var office_name					= $("#office_name").val();
-    	var address						= $("#address").val();
-    	var phone						= $("#phone").val();
-    	var email						= $("#email").val();
-    	var website						= $("#website").val();
-    	var takes_OHP					= $("#takes_OHP").val();
-    	var takes_private_ins			= $("#takes_private_ins").val();
-    	var sliding_scale				= $("#sliding_scale").val();
-    	var diversity_aware				= $("#diversity_aware").val();
-    	var paperwork_not_only_mf		= $("#paperwork_not_only_mf").val();
-    	var paperwork_asks_for_pronoun	= $("#paperwork_asks_for_pronoun").val();
-    	var can_monitor_hormones		= $("#can_monitor_hormones").val();
-    	var notes						= $("#notes").val();
+		var type = $("#type").val();
+		var name = $("#name").val();
+		var office_name = $("#office_name").val();
+		var address = $("#address").val();
+		var phone = $("#phone").val();
+		var email = $("#email").val();
+		var website = $("#website").val();
 
-    	// Prefer these fields as bools (?)
-    	takes_OHP = (takes_OHP == '' || takes_OHP == "no") ? false : takes_OHP;
-    	takes_private_ins = (takes_private_ins == '' || takes_private_ins == "no") ? false : takes_private_ins;
-    	paperwork_not_only_mf = (paperwork_not_only_mf == '' || paperwork_not_only_mf == "no") ? false : paperwork_not_only_mf;
-    	paperwork_asks_for_pronoun = (paperwork_asks_for_pronoun == '' || paperwork_asks_for_pronoun == "no") ? false : paperwork_asks_for_pronoun;
-    	can_monitor_hormones = (can_monitor_hormones == '' || can_monitor_hormones == "no") ? false : can_monitor_hormones;
+		var takes_OHP = $('input[name=OHP]:checked').val();
+		console.log(takes_OHP)
+		if (takes_OHP == "yes")
+			takes_OHP = true;
+		else if (takes_OHP == "no")
+			takes_OHP = false;
+		console.log(takes_OHP)
 
+		var takes_private_ins = $('input[name=prv_ins]:checked').val();
+		console.log(takes_private_ins)
+		if (takes_private_ins == "yes")
+			takes_private_ins = true;
+		else if (takes_private_ins == "no")
+			takes_private_ins = false;
+		console.log(takes_private_ins)
+
+		var sliding_scale = $('input[name=slide_scale]:checked').val();
+		console.log(sliding_scale)
+		if (sliding_scale == "yes")
+			sliding_scale = true;
+		else if (sliding_scale == "no")
+			sliding_scale = false;
+		console.log(sliding_scale)
+
+		var diversity_aware = $('input[name=diversity]:checked').val();
+		if (diversity_aware == "yes")
+			diversity_aware = true;
+		else if (diversity_aware == "no")
+			diversity_aware = false;
+
+		var paperwork_not_only_mf = $('input[name=only_mf]:checked').val();
+		if (paperwork_not_only_mf == "yes")
+			paperwork_not_only_mf = true;
+		else if (paperwork_not_only_mf == "no")
+			paperwork_not_only_mf = false;
+
+		var paperwork_asks_for_pronoun = $('input[name=pronoun]:checked').val();
+		if (paperwork_asks_for_pronoun == "yes")
+			paperwork_asks_for_pronoun = true;
+		else if (paperwork_asks_for_pronoun == "no")
+			paperwork_asks_for_pronoun = false;
+
+		var can_monitor_hormones = $('input[name=hormones]:checked').val();
+		if (can_monitor_hormones == "yes")
+			can_monitor_hormones = true;
+		else if (can_monitor_hormones == "no")
+			can_monitor_hormones = false;
+
+		var notes = $('#notes').val();
+		
     	// Push data to server
     	$.getJSON(CREATE_URL, {
     		"type": type,
@@ -87,83 +122,127 @@
     		add_resource();
     	});
     }
-    </script>
+	</script>
 </head>
-    <body>
-        <img id="tplogo" src="static/img/tplogo.png" height="90px" width="90px">
-            <!-- based on instructions from W3 Schools -->
-        <div id = "page-content-wrapper">
-          <div class="container" id = "submit-container">
-        		<h1>Resource information:</h1>
-        		<div id = "submit-form">
-							<div class = "form-group" id = "contact-info-submit">
-	        			<input class = "form-control" type="text" name="type" id="type" placeholder="Category" />
-	        			<br />
-	        			<input class = "form-control" type="text" name="name" id="name" placeholder="Name" />
-	        			<br />
-	        			<input class = "form-control" type="text" name="office_name" id="office_name" placeholder="Name of Office" />
-	        			<br />
-	        			<input class = "form-control" type="text" name="address" id="address" placeholder="Address" />
-	        			<br />
-	        			<input class = "form-control" type="text" name="phone" id="phone" placeholder="Phone" />
-	        			<br />
-	        			<input class = "form-control" type="text" name="email" id="email" placeholder="Email" />
-	        			<br />
-	        			<input class = "form-control" type="text" name="website" id="website" placeholder="Website" />
-	        			<br />
-							</div>
-							<div class = "form-group" id = "perk-submit">
-	        			<input class = "form-control" type="text" name="takes_OHP" id="takes_OHP" placeholder="Do they accept OHP?" />
-	        			<br />
-	        			<input class = "form-control" type="text" name="takes_private_ins" id="takes_private_ins" placeholder="Do they accept private insurance" />
-	        			<br />
-	        			<input class = "form-control" type="text" name="sliding_scale" id="sliding_scale" placeholder="Do they have a sliding scale payment system" />
-	        			<br />
-	        			<input class = "form-control" type="text" name="diversity_aware" id="diversity_aware" placeholder="Does the provider have Diversity Awareness Training?" />
-	        			<br />
-	        			<input class = "form-control" type="text" name="paperwork_not_only_mf" id="paperwork_not_only_mf" placeholder="Does the providers paperwork only have Male/Female pronouns" />
-	        			<br />
-	        			<input class = "form-control" type="text" name="paperwork_asks_for_pronoun" id="paperwork_asks_for_pronoun" placeholder="Does the paperwork ask for pronouns" />
-	        			<br />
-	        			<input class = "form-control" type="text" name="can_monitor_hormones" id="can_monitor_hormones" placeholder="Can the Provider monitor hormones" />
-	        			<br />
-							</div>
-							<br />
-        			<input class = "form-control" type="text" name="notes" id="notes" placeholder="Extra notes / Details" />
-        			<br />
-        			<button class="btn btn-warning submit" id="submit" type="button" <!-- type:button removes default submit-->Submit</button>
-							<br />
-						</div>
-        </div>
-          <div id= "donation-box">
-            </br>
-            </br>
-            </br>
-        </div>
-        </div>
-      </div>
-    </body>
-    <footer class="page-footer">
-        <div id="contact">
-          <ul id = "contact-list">
-            <li>
-              <h3>Email</h3>
-              <p>admin@transponder.community</p>
-            </li>
-            <li>
-              <h3>Phone</h3>
-              <p>508-443-6337 (4GENDER)</p>
-            </li>
-            <li>
-              <h3>Mailing Address</h3>
-              <p>541 Willamette St #407a
-              Eugene, OR 97401</p>
-            </li>
-          </dd>
-        </ul>
-        </div>
-        <div id="bottom-bar">
-          Team Salmon - Andrea Nosler, Narayana Emery, Samuel Champer - Hack for a Cause 2018
-        </div>
-    </footer>
+<body>
+	<img id="tplogo" src="static/img/tplogo.png" height="90px" width="90px">
+	<!-- based on instructions from W3 Schools -->
+	<div id="page-content-wrapper">
+		<div class="container" id="submit-container">
+			<h1>Resource information:</h1>
+			<div id="submit-form">
+				<div class="form-group" id="contact-info-submit">
+					<input class="form-control" type="text" name="type" id="type" placeholder="Category" />
+					<br />
+					<input class="form-control" type="text" name="name" id="name" placeholder="Name" />
+					<br />
+					<input class="form-control" type="text" name="office_name" id="office_name" placeholder="Name of Office" />
+					<br />
+					<input class="form-control" type="text" name="address" id="address" placeholder="Address" />
+					<br />
+					<input class="form-control" type="text" name="phone" id="phone" placeholder="Phone" />
+					<br />
+					<input class="form-control" type="text" name="email" id="email" placeholder="Email" />
+					<br />
+					<input class="form-control" type="text" name="website" id="website" placeholder="Website" />
+					<br />
+				</div>
+				<div class="form-group" id="perk-submit">
+					<b>Do they accept OHP?</b>
+					<br />
+					<div>
+						<input type="radio" name="OHP" value="yes" >Yes
+						<input type="radio" name="OHP" value="no" >No
+						<input type="radio" name="OHP" value="N/A" >N/A<br/>
+					</div>
+					<br />
+					<b>Do they accept private insurance?</b>
+					<br />
+					<div>
+						<input type="radio" name="prv_ins" value="yes" >Yes
+						<input type="radio" name="prv_ins" value="no" >No
+						<input type="radio" name="prv_ins" value="N/A" >N/A<br/>
+					</div>
+					<br />
+					<b>Do they have a sliding scale payment system?</b>
+					<br />
+					<div>
+						<input type="radio" name="slide_scale" value="yes" >Yes
+						<input type="radio" name="slide_scale" value="no" >No
+						<input type="radio" name="slide_scale" value="N/A" >N/A<br/>
+					</div>
+					<br />
+					<b>Does the provider have Diversity Awareness Training?</b>
+					<br />
+					<div>
+						<input type="radio" name="diversity" value="yes" />Yes
+						<input type="radio" name="diversity" value="no" />No
+						<input type="radio" name="diversity" value="N/A" />N/A<br/>
+					</div>
+					<br />
+					<b>Does the providers paperwork only have Male/Female pronouns?</b>
+					<br />
+					<div>
+						<input type="radio" name="only_mf" value="yes" />Yes
+						<input type="radio" name="only_mf" value="no" />No
+						<input type="radio" name="only_mf" value="N/A" />N/A<br/>
+					</div>
+					<br />
+					<b>Does the paperwork ask for pronouns?</b>
+					<br />
+					<div>
+						<input type="radio" name="pronoun" value="yes" />Yes
+						<input type="radio" name="pronoun" value="no" />No
+						<input type="radio" name="pronoun" value="N/A" />N/A<br/>
+					</div>
+					<br />
+					<b>Can the Provider monitor hormones?</b>
+					<br />
+					<div>
+						<input type="radio" name="hormones" value="yes" />Yes
+						<input type="radio" name="hormones" value="no" />No
+						<input type="radio" name="hormones" value="N/A" />>N/A<br/>
+					</div>
+					<br />
+				</div>
+				<br />
+				<input class="form-control" type="text" name="notes" id="notes" placeholder="Extra notes / Details" />
+				<br />
+				<button class="btn btn-warning submit" id="submit" type="button" <!-- type:button removes default submit-->Submit</button>
+				<br />
+			</div>
+		</div>
+		<div id="donation-box">
+			</br>
+			</br>
+			</br>
+		</div>
+	</div>
+	</div>
+</body>
+<footer class="page-footer">
+	<div id="contact">
+		<ul id="contact-list">
+			<li>
+				<h3>Email</h3>
+				<p>admin@transponder.community</p>
+			</li>
+			<li>
+				<h3>Phone</h3>
+				<p>508-443-6337 (4GENDER)</p>
+			</li>
+			<li>
+				<h3>Mailing Address</h3>
+				<p>
+					541 Willamette St #407a
+					Eugene, OR 97401
+				</p>
+			</li>
+			</dd>
+		</ul>
+	</div>
+	<div id="bottom-bar">
+		Team Salmon - Andrea Nosler, Narayana Emery, Samuel Champer - Hack for a Cause 2018
+	</div>
+</footer>
 </html>
