@@ -41,7 +41,7 @@
 		var paperwork_asks_for_pronoun = $('input[name=pronoun]:checked').val();
 		var can_monitor_hormones = $('input[name=hormones]:checked').val();
 		var notes = $('#notes').val();
-		
+
     	// Push data to server
     	$.getJSON(CREATE_URL, {
     		"type": type,
@@ -107,63 +107,111 @@
 					<input class="form-control" type="text" name="website" id="website" placeholder="Website" />
 					<br />
 				</div>
+				<div id = "radio-menu-items">
 				<div class="form-group" id="perk-submit">
 					<b>Do they accept OHP?</b>
 					<br />
-					<div>
+					<div class="btn-group btn-group-toggle" data-toggle="buttons">
+				  <label class="btn btn-success">
 						<input type="radio" name="OHP" value="yes" >Yes
+				  </label>
+				  <label class="btn btn-danger">
 						<input type="radio" name="OHP" value="no" >No
+				  </label>
+				  <label class="btn btn-default">
 						<input type="radio" name="OHP" value="N/A" >N/A<br/>
-					</div>
+				  </label>
+				</div>
+
 					<br />
 					<b>Do they accept private insurance?</b>
 					<br />
-					<div>
+				<div class="btn-group btn-group-toggle" data-toggle="buttons">
+					<label class="btn btn-success">
 						<input type="radio" name="prv_ins" value="yes" >Yes
+					</label>
+					<label class="btn btn-danger">
 						<input type="radio" name="prv_ins" value="no" >No
+					</label>
+					<label class="btn btn-default">
 						<input type="radio" name="prv_ins" value="N/A" >N/A<br/>
-					</div>
+					</label>
+				</div>
 					<br />
+
 					<b>Do they have a sliding scale payment system?</b>
 					<br />
-					<div>
-						<input type="radio" name="slide_scale" value="yes" >Yes
-						<input type="radio" name="slide_scale" value="no" >No
-						<input type="radio" name="slide_scale" value="N/A" >N/A<br/>
+					<div class="btn-group btn-group-toggle" data-toggle="buttons">
+						<label class="btn btn-success">
+							<input type="radio" name="slide_scale" value="yes" >Yes
+						</label>
+						<label class="btn btn-danger">
+							<input type="radio" name="slide_scale" value="no" >No
+						</label>
+						<label class="btn btn-default">
+							<input type="radio" name="slide_scale" value="N/A" >N/A<br/>
+						</label>
 					</div>
-					<br />
+						<br />
+
 					<b>Does the provider have Diversity Awareness Training?</b>
 					<br />
-					<div>
-						<input type="radio" name="diversity" value="yes" />Yes
-						<input type="radio" name="diversity" value="no" />No
-						<input type="radio" name="diversity" value="N/A" />N/A<br/>
+					<div class="btn-group btn-group-toggle" data-toggle="buttons">
+						<label class="btn btn-success">
+							<input type="radio" name="diversity" value="yes" />Yes
+						</label>
+						<label class="btn btn-danger">
+							<input type="radio" name="diversity" value="no" />No
+						</label>
+						<label class="btn btn-default">
+							<input type="radio" name="diversity" value="N/A" />N/A<br/>
+						</label>
 					</div>
+						<br />
+
+					<b>Does the privder include non-binary pronouns?</b>
 					<br />
-					<b>Does the providers paperwork only have Male/Female pronouns?</b>
-					<br />
-					<div>
-						<input type="radio" name="only_mf" value="yes" />Yes
-						<input type="radio" name="only_mf" value="no" />No
-						<input type="radio" name="only_mf" value="N/A" />N/A<br/>
+					<div class="btn-group btn-group-toggle" data-toggle="buttons">
+						<label class="btn btn-success">
+							<input type="radio" name="only_mf" value="yes" />Yes
+						</label>
+						<label class="btn btn-danger">
+							<input type="radio" name="only_mf" value="no" />No
+						</label>
+						<label class="btn btn-default">
+							<input type="radio" name="only_mf" value="N/A" />N/A<br/>
+						</label>
 					</div>
-					<br />
+						<br />
+
 					<b>Does the paperwork ask for pronouns?</b>
 					<br />
-					<div>
-						<input type="radio" name="pronoun" value="yes" />Yes
-						<input type="radio" name="pronoun" value="no" />No
-						<input type="radio" name="pronoun" value="N/A" />N/A<br/>
+					<div class="btn-group btn-group-toggle" data-toggle="buttons">
+						<label class="btn btn-success">
+							<input type="radio" name="pronoun" value="yes" />Yes
+						</label>
+						<label class="btn btn-danger">
+							<input type="radio" name="pronoun" value="no" />No
+						</label>
+						<label class="btn btn-default">
+							<input type="radio" name="pronoun" value="N/A" />N/A<br/>
+						</label>
 					</div>
-					<br />
+				</br>
 					<b>Can the Provider monitor hormones?</b>
 					<br />
-					<div>
-						<input type="radio" name="hormones" value="yes" />Yes
-						<input type="radio" name="hormones" value="no" />No
-						<input type="radio" name="hormones" value="N/A" />>N/A<br/>
+					<div class="btn-group btn-group-toggle" data-toggle="buttons">
+						<label class="btn btn-success">
+							<input type="radio" name="hormones" value="yes" />Yes
+						</label>
+						<label class="btn btn-danger">
+							<input type="radio" name="hormones" value="no" />No
+						</label>
+						<label class="btn btn-default">
+							<input type="radio" name="hormones" value="N/A" />N/A<br/>
+						</label>
 					</div>
-					<br />
+				</div>
 				</div>
 				<br />
 				<input class="form-control" type="text" name="notes" id="notes" placeholder="Extra notes / Details" />
@@ -203,6 +251,7 @@
 	</div>
 	<div id="bottom-bar">
 		Team Salmon - Andrea Nosler, Narayana Emery, Samuel Champer - Hack for a Cause 2018
+		<a class="btn btn-info btn-xs" id="submit-button" href="index" role="button">Home</a>
 	</div>
 </footer>
 </html>

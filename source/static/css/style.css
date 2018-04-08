@@ -101,12 +101,12 @@ h1{
 #r_contactInfo{
   disply:inline-block;
 }
-#r_perks{
-  display: inline-block;
-  width: auto%;
-}
 #r_image{
   border-radius: 10px;
+}
+#r_perks{
+  font-size: 12px;
+  float:left;
 }
 #r_titleDiv{
   display: inline-block;
@@ -120,11 +120,6 @@ h1{
 #r_contactInfo{
   list-style: none;
   width: 100%;
-  display: inline-block;
-}
-#r_perks{
-  float: right;
-  list-style: none;
   display: inline-block;
 }
 h1{
@@ -232,4 +227,11 @@ tbody{
 }
 #c-Address, #c-Phone, #c-Email{
   margin-right: 10%;
+}
+#register-button{
+  float:right;
+  padding-right:15px;
+}
+.uv-resource{
+  background-color: #ffa8a8;
 }
