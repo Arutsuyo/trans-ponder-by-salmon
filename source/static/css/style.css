@@ -7,15 +7,7 @@ html, body {
 body{
   background-color: white;
   height: 100%;
-  padding-bottom: 190px;
-}
-#log-in-button{
-  float:right;
-}
-#log-in-form{
-  padding:5px;
-  display:inline-block;
-  float:right;
+  padding-bottom: 180px;
 }
 #tplogo{
   display: inline-block;
@@ -24,7 +16,7 @@ body{
   float:top;
   position:fixed;
   margin: 20px;
-  border-radius: 50px;
+  border-radius: 20px;
   margin-left: 30px;
   z-index: 10;
 }
@@ -36,13 +28,16 @@ body{
 .dropdown-menu{
   margin-left: 150px;
 }
+h1{
+  font-family: 'Josefin Sans', sans-serif;
+}
 .container{
   display: inline-block;
   white-space:nowrap;
   width:60%;
+  min-height: 100%;
   margin-left: 150px;
   margin-right: 1%;
-  min-height: 500px;
   background-color: #f9f6e3;
   font-family: 'Lato', sans-serif;
 }
@@ -76,9 +71,6 @@ body{
   margin-bottom: 5px;
   display: inline-block;
 }
-#log-in{
-  float:right;
-}
 .btn-group{
   display:inline-block;
 }
@@ -93,18 +85,28 @@ body{
 .resource{
   background-color: #EEEEEE;
   border-radius: 10px;
-  padding: 5px;
+  padding: 10px;
 }
 #r_head{
   display: inline-block;
   background-color: #00FF66;
-  margin: 10px;
+  margin: 5px;
 }
 #r_img_div{
   display: inline-block;
   margin: 5px;
   float:left;
   border-radius: 10px;
+}
+#r_contactInfo{
+  disply:inline-block;
+  width: 50%;
+  background-color: red;
+}
+#r_perks{
+  display: inline-block;
+  width: auto%;
+  background-color: blue;
 }
 #r_image{
   border-radius: 10px;
@@ -116,7 +118,6 @@ body{
 }
 #r_titleDiv{
   display: inline-block;
-  margin-left: 10px;
 }
 #r_providerName{
   display: inline-block;
@@ -126,15 +127,16 @@ body{
 }
 #r_contactInfo{
   list-style: none;
-  margin-left: 30px;
+  width: 100%;
   display: inline-block;
 }
 #r_perks{
   float: right;
-  margin-right: 30px;
   list-style: none;
   display: inline-block;
-  margin-right: 10px;
+}
+h1{
+
 }
 #r_contact{
   margin-left: 10px;
@@ -157,6 +159,19 @@ body{
   height: 160px;
   width: 100%;
 }
+dt{
+  font-size:20px;
+}
+dd:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+li{
+  display:inline-block;
+  padding: 10px;
+  padding-right: 10%;
+}
 #bottom-bar{
   background-color: #28313d;
   color: #49515d;
@@ -167,8 +182,11 @@ body{
 }
 footer{
   bottom: 0;
-  height:190px;
+  height:130px;
   width: 100%;
+}
+h3{
+  font-weight: 600;
 }
 #contact-list{
   padding: 30px;
@@ -177,4 +195,31 @@ footer{
 }
 ul{
   list-style: none;
+}
+#contact-info-submit{
+  display: inline-block;
+  width: 50%;
+}
+#perk-submit{
+  display: inline-block;
+  width: 50%;
+}
+#submit-form{
+  padding: 10px;
+}
+#log-in-container, #submit-container{
+  text-align: center;
+}
+
+#log-in{
+  text-align: left;
+  width: 50%;
+  margin:auto;
+  position: relative;
+  background-color: white;
+  padding: 30px;
+  border-radius: 20px;
+}
+#username, #password, #volunteer_pass{
+  margin-bottom: 8px;
 }
