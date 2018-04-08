@@ -222,6 +222,22 @@
 					var VE_CATEGORIES_URL = SCRIPT_ROOT + "/_verifiedcategories";
 					var UN_CATEGORIES_URL = SCRIPT_ROOT + "/_unverifiedcategories";
 					var ALL_CATEGORIES_URL = SCRIPT_ROOT + "/_allcategories";
+					var LOGIN_URL = SCRIPT_ROOT + "/_login";
+
+					function login() {
+						$.getJSON(LOGIN_URL, {
+							username: $('#login-username').val(),
+							password: $('#login-password').val()
+						}, function (data) {
+							var res = data.result;
+							if (res.error) {
+								alert(res.message);
+							}
+							else {
+								alert("Logged in!")
+							}
+						}); 
+					}
 
 					// Scrap the collection and generate the dropdown with the
 					// Verified categories
@@ -267,7 +283,7 @@
                 <label for="inputPassword2" class="sr-only">Password</label>
                 <input type="password" class="input-sm form-control" id="login-password" placeholder="Password">
             </div>
-            <button type="submit" class="btn btn-warning btn-sm">Log In</button>
+            <button type="button" class="btn btn-warning btn-sm" onclick="login()">Log In</button>
         </form>
     </div>
     <div id="page-content-wrapper">

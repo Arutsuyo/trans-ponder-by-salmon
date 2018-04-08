@@ -181,7 +181,8 @@ def login_user():
 @app.route("/")
 @app.route("/index")
 def index():
-    flask.session["volunteer"] = False
+    if 'volunteer' not in flask.session:
+        flask.session["volunteer"] = False
     app.logger.debug("Main page entry")
     return flask.render_template('index.html')
 
