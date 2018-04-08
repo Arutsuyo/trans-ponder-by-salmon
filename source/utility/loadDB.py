@@ -56,7 +56,7 @@ except:
 def create(line):
     print(len(info))
     print(info)
-    new = {"category": info[0],
+    new = {"type": info[0],
            "name": info[1],
            "office_name": info[2],
            "address": info[3],
@@ -71,7 +71,7 @@ def create(line):
            "paperwork_asks_for_pronoun": info[12],
            "can_monitor_hormones": info[13],
            "notes": info[14],
-           "verified": False
+           "verified": True
            }
     res = collection.insert(new)
     if hasattr(res, "writeConcernError"):
